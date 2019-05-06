@@ -1,0 +1,72 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+TEST	.\tests\lite_service_test.cc	/^TEST(LiteService, basic) {$/;"	f
+TEST	.\tests\request_queue_test.cc	/^TEST(RequestQueue, basic) {$/;"	f
+TEST	.\tests\request_queue_test.cc	/^TEST(RequestQueue, read_write) {$/;"	f
+TEST	.\tests\request_queue_test.cc	/^TEST(RequestQueue, send_fail) {$/;"	f
+TEST	.\tests\request_queue_test.cc	/^TEST(RequestQueue, send_process) {$/;"	f
+TK_LITE_SERVICE_H	.\src\lite_service\lite_service.h	23;"	d
+TK_REQUEST_QUEUE_H	.\src\lite_service\request_queue.h	23;"	d
+TK_SERVICE_THREAD_H	.\src\lite_service\service_thread.h	23;"	d
+_idle_data_t	.\src\lite_service\lite_service.c	/^typedef struct _idle_data_t {$/;"	s	file:
+_lite_service_t	.\src\lite_service\lite_service.h	/^struct _lite_service_t {$/;"	s
+_lite_service_vtable_t	.\src\lite_service\lite_service.h	/^struct _lite_service_vtable_t {$/;"	s
+_request_queue_t	.\src\lite_service\request_queue.h	/^typedef struct _request_queue_t {$/;"	s
+buff	.\src\lite_service\request_queue.h	/^  uint8_t* buff;$/;"	m	struct:_request_queue_t
+desc	.\src\lite_service\lite_service.h	/^  const char* desc;$/;"	m	struct:_lite_service_vtable_t
+event	.\src\lite_service\lite_service.c	/^  char event[4];$/;"	m	struct:_idle_data_t	file:
+full	.\src\lite_service\request_queue.h	/^  bool_t full;$/;"	m	struct:_request_queue_t
+idle_data_t	.\src\lite_service\lite_service.c	/^}idle_data_t;$/;"	t	typeref:struct:_idle_data_t	file:
+lite_service_create	.\src\lite_service\lite_service.c	/^lite_service_t* lite_service_create(const lite_service_vtable_t* vt) {$/;"	f
+lite_service_destroy	.\src\lite_service\lite_service.c	/^ret_t lite_service_destroy(lite_service_t* service) {$/;"	f
+lite_service_dispatch	.\src\lite_service\lite_service.c	/^ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size) {$/;"	f
+lite_service_dispatch_in_idle	.\src\lite_service\lite_service.c	/^static ret_t lite_service_dispatch_in_idle(const idle_info_t* info) {$/;"	f	file:
+lite_service_on_destroy_t	.\src\lite_service\lite_service.h	/^typedef ret_t (*lite_service_on_destroy_t)(lite_service_t* service);$/;"	t
+lite_service_on_request_log	.\tests\lite_service_test.cc	/^static ret_t lite_service_on_request_log(lite_service_t* service, uint32_t cmd, uint32_t payload_size, const void* payload) {$/;"	f	file:
+lite_service_on_request_t	.\src\lite_service\lite_service.h	/^typedef ret_t (*lite_service_on_request_t)(lite_service_t* service, uint32_t cmd, uint32_t data_size, const void* data);$/;"	t
+lite_service_request	.\src\lite_service\lite_service.c	/^ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_size, const void* data) {$/;"	f
+lite_service_run	.\src\lite_service\lite_service.c	/^ret_t lite_service_run(lite_service_t* service) {$/;"	f
+lite_service_run_default	.\src\lite_service\lite_service.c	/^static ret_t lite_service_run_default(lite_service_t* service) {$/;"	f	file:
+lite_service_run_t	.\src\lite_service\lite_service.h	/^typedef ret_t (*lite_service_run_t)(lite_service_t* service);$/;"	t
+lite_service_set_on_event	.\src\lite_service\lite_service.c	/^uint32_t lite_service_set_on_event(lite_service_t* service, event_func_t on_event, void* ctx) {$/;"	f
+lite_service_t	.\src\lite_service\lite_service.h	/^typedef struct _lite_service_t lite_service_t;$/;"	t	typeref:struct:_lite_service_t
+lite_service_vtable_t	.\src\lite_service\lite_service.h	/^typedef struct _lite_service_vtable_t lite_service_vtable_t;$/;"	t	typeref:struct:_lite_service_vtable_t
+main	.\tests\main.cc	/^GTEST_API_ int main(int argc, char** argv) {$/;"	f
+max_payload_size	.\src\lite_service\lite_service.h	/^  uint32_t max_payload_size;$/;"	m	struct:_lite_service_vtable_t
+max_payload_size	.\src\lite_service\request_queue.h	/^  uint32_t max_payload_size;$/;"	m	struct:_request_queue_t
+mutex	.\src\lite_service\request_queue.h	/^  tk_mutex_t* mutex;$/;"	m	struct:_request_queue_t
+on_destroy	.\src\lite_service\lite_service.h	/^  lite_service_on_destroy_t on_destroy;$/;"	m	struct:_lite_service_vtable_t
+on_event	.\src\lite_service\lite_service.c	/^  event_func_t on_event;$/;"	m	struct:_idle_data_t	file:
+on_event	.\src\lite_service\lite_service.h	/^  event_func_t on_event;$/;"	m	struct:_lite_service_t
+on_event_ctx	.\src\lite_service\lite_service.c	/^  void* on_event_ctx;$/;"	m	struct:_idle_data_t	file:
+on_event_ctx	.\src\lite_service\lite_service.h	/^  void* on_event_ctx;$/;"	m	struct:_lite_service_t
+on_request	.\src\lite_service\lite_service.h	/^  lite_service_on_request_t on_request;$/;"	m	struct:_lite_service_vtable_t
+on_request	.\src\lite_service\request_queue.h	/^  request_queue_on_request_t on_request;$/;"	m	struct:_request_queue_t
+on_request_ctx	.\src\lite_service\request_queue.h	/^  void* on_request_ctx;$/;"	m	struct:_request_queue_t
+payload	.\src\lite_service\request_queue.h	/^  uint8_t* payload;$/;"	m	struct:_request_queue_t
+queue	.\src\lite_service\lite_service.h	/^  request_queue_t* queue;$/;"	m	struct:_lite_service_t
+queue_size	.\src\lite_service\lite_service.h	/^  uint32_t queue_size;$/;"	m	struct:_lite_service_vtable_t
+r	.\src\lite_service\request_queue.h	/^  uint32_t r;$/;"	m	struct:_request_queue_t
+request_queue_create	.\src\lite_service\request_queue.c	/^request_queue_t* request_queue_create(uint32_t size, uint32_t max_payload_size, request_queue_on_request_t on_request, void* on_request_ctx) {$/;"	f
+request_queue_destroy	.\src\lite_service\request_queue.c	/^ret_t request_queue_destroy(request_queue_t* q) {$/;"	f
+request_queue_get_available_data	.\src\lite_service\request_queue.c	/^uint32_t request_queue_get_available_data(request_queue_t* q) {$/;"	f
+request_queue_get_available_space	.\src\lite_service\request_queue.c	/^uint32_t request_queue_get_available_space(request_queue_t* q) {$/;"	f
+request_queue_on_request_log	.\tests\request_queue_test.cc	/^static ret_t request_queue_on_request_log(void* ctx, uint32_t cmd, uint32_t payload_size, const void* payload) {$/;"	f	file:
+request_queue_on_request_t	.\src\lite_service\request_queue.h	/^typedef ret_t (*request_queue_on_request_t)(void* ctx, uint32_t cmd, uint32_t payload_size, const void* payload);$/;"	t
+request_queue_process	.\src\lite_service\request_queue.c	/^ret_t request_queue_process(request_queue_t* q, uint32_t max_requests) {$/;"	f
+request_queue_read_data	.\src\lite_service\request_queue.c	/^ret_t request_queue_read_data(request_queue_t* q, uint8_t* payload, uint32_t size) {$/;"	f
+request_queue_send	.\src\lite_service\request_queue.c	/^ret_t request_queue_send(request_queue_t* q, uint32_t cmd, uint32_t payload_size, const void* payload) {$/;"	f
+request_queue_t	.\src\lite_service\request_queue.h	/^}request_queue_t;$/;"	t	typeref:struct:_request_queue_t
+request_queue_write_data	.\src\lite_service\request_queue.c	/^ret_t request_queue_write_data(request_queue_t* q, const uint8_t* payload, uint32_t size) {$/;"	f
+run	.\src\lite_service\lite_service.h	/^  lite_service_run_t run;$/;"	m	struct:_lite_service_vtable_t
+s_log	.\tests\lite_service_test.cc	/^static string s_log;$/;"	v	file:
+size	.\src\lite_service\lite_service.h	/^  uint32_t size;$/;"	m	struct:_lite_service_vtable_t
+size	.\src\lite_service\request_queue.h	/^  uint32_t size;$/;"	m	struct:_request_queue_t
+type	.\src\lite_service\lite_service.h	/^  const char* type;$/;"	m	struct:_lite_service_vtable_t
+vt	.\src\lite_service\lite_service.h	/^  const lite_service_vtable_t* vt;$/;"	m	struct:_lite_service_t
+vt1	.\tests\lite_service_test.cc	/^static const lite_service_vtable_t vt1 = {$/;"	v	file:
+w	.\src\lite_service\request_queue.h	/^  uint32_t w;$/;"	m	struct:_request_queue_t

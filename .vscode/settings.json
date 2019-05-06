@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/*.exe": true,
+        "**/*.lib": true,
+        "**/*.o": true,
+        "**/*.obj": true,
+        "**/*.pdb": true,
+        "**/*.swp": true,
+        "bin": true,
+        "lib": true,
+        "tags": true
+    }
+}
