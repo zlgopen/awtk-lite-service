@@ -23,6 +23,7 @@
 #define TK_LITE_SERVICE_H
 
 #include "tkc/mutex.h"
+#include "tkc/thread.h"
 #include "tkc/emitter.h"
 #include "lite_service/request_queue.h"
 
@@ -52,7 +53,6 @@ struct _lite_service_vtable_t {
 
 /**
  * @class lite_service_t
- * @parent emitter_t
  *
  * 服务接口。
  *
@@ -61,8 +61,11 @@ struct _lite_service_t {
   request_queue_t* queue;
   const lite_service_vtable_t* vt;
 
+  void* init_data;
   event_func_t on_event;
   void* on_event_ctx;
+
+  tk_thread_t* thread;
 };
 
 /**
@@ -71,10 +74,11 @@ struct _lite_service_t {
  * 创建lite service对象。
  *
  * @param {lite_service_vtable_t*} vt lite_service虚表。
+ * @param {void*} init_data 初始化数据。
  *
  * @return {lite_service_t*} 返回lite_service对象。
  */
-lite_service_t* lite_service_create(const lite_service_vtable_t* vt);
+lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_data);
 
 /**
  * @method lite_service_run

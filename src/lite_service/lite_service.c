@@ -24,7 +24,7 @@
 #include "base/idle.h"
 #include "lite_service/lite_service.h"
 
-lite_service_t* lite_service_create(const lite_service_vtable_t* vt) {
+lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_data) {
   lite_service_t* service = NULL;
   return_value_if_fail(vt != NULL && (vt->run != NULL || vt->on_request != NULL) && vt->size >= sizeof(lite_service_t), NULL);
 
@@ -34,6 +34,7 @@ lite_service_t* lite_service_create(const lite_service_vtable_t* vt) {
   memset(service, 0x00, vt->size);
 
   service->vt = vt;
+  service->init_data = init_data;
   if(vt->queue_size > 128 && vt->on_request != NULL) {
     service->queue = request_queue_create(vt->queue_size, vt->max_payload_size, vt->on_request, service); 
   }
@@ -89,7 +90,7 @@ static ret_t lite_service_dispatch_in_idle(const idle_info_t* info) {
 
 ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size) {
   idle_data_t* data = NULL;
-  return_value_if_fail(service != NULL && service->vt != NULL, RET_BAD_PARAMS);
+  return_value_if_fail(service != NULL && service->vt != NULL && e != NULL, RET_BAD_PARAMS);
 
   if(service->on_event != NULL) {
     data = (idle_data_t*)TKMEM_ALLOC(sizeof(idle_data_t) + size);

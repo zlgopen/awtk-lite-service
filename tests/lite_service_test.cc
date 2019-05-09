@@ -32,7 +32,7 @@ TEST(LiteService, basic) {
   vt1.max_payload_size = 16;
   vt1.on_request = lite_service_on_request_log;
 
-  lite_service_t* s = lite_service_create(&vt1);
+  lite_service_t* s = lite_service_create(&vt1, NULL);
 
   s_log = "";
   ASSERT_EQ(lite_service_request(s, 1234, 4, "abc"), RET_OK);
@@ -52,7 +52,7 @@ TEST(LiteService, thread) {
   vt1.max_payload_size = 16;
   vt1.on_request = lite_service_on_request_log;
 
-  tk_thread_t* t = service_thread_start(&vt1);
+  tk_thread_t* t = service_thread_start(&vt1, NULL, NULL, NULL);
 
   s_log = "";
   ASSERT_EQ(service_thread_request(t, 1234, 4, "abc"), RET_OK);

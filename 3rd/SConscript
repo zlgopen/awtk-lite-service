@@ -1,0 +1,17 @@
+import os
+import sys
+
+env=DefaultEnvironment().Clone()
+LIB_DIR=os.environ['LIB_DIR'];
+
+env['CPPPATH'] = env['CPPPATH'] + [
+  os.path.join('.', 'curl/src'),
+  os.path.join('.', 'curl/lib')
+]
+
+SOURCES=Glob('curl/src/*.c') \
+  +  Glob('curl/lib/*.c') \
+  +  Glob('curl/lib/vauth/*.c') \
+  + Glob('curl/lib/vtls/*.c')
+
+env.Library(os.path.join(LIB_DIR, 'curl'), SOURCES);

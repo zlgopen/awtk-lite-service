@@ -33,10 +33,13 @@ BEGIN_C_DECLS
  * 启动服务线程。
  * 
  * @param {lite_service_vtable_t*} vt lite_service vtable对象。
+ * @param {void*} init_data 初始化数据。
+ * @param {event_func_t} on_event 事件处理函数。
+ * @param {void*} on_event_ctx 事件处理函数的上下文。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
-tk_thread_t* service_thread_start(lite_service_vtable_t* vt);
+tk_thread_t* service_thread_start(lite_service_vtable_t* vt, void* init_data, event_func_t on_event, void* on_event_ctx);
 
 /**
  * @method service_thread_request 

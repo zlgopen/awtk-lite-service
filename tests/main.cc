@@ -27,14 +27,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdio.h>
-
-#include "awtk.h"
 #include "tkc/mem.h"
 #include "base/idle.h"
 #include "base/system_info.h"
 #include "gtest/gtest.h"
 #include "demos/assets.h"
+#include "awtk.h"
+#include "http/http.h"
 
 GTEST_API_ int main(int argc, char** argv) {
   printf("Running main() from gtest_main.cc\n");
@@ -43,11 +42,13 @@ GTEST_API_ int main(int argc, char** argv) {
   system_info_init(APP_SIMULATOR, NULL, "./");
   tk_init_internal();
 
+  http_init();
   assets_init();
   tk_init_assets();
 
   RUN_ALL_TESTS();
 
+  http_deinit();
   tk_deinit_internal();
 
   return 0;

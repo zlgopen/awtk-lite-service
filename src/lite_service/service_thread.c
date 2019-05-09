@@ -29,18 +29,22 @@ static void* service_entry(void* args) {
   lite_service_run(service);
   lite_service_destroy(service);
   log_debug("service_entry done\n");
+
   return NULL;
 }
 
-tk_thread_t* service_thread_start(lite_service_vtable_t* vt) {
+tk_thread_t* service_thread_start(lite_service_vtable_t* vt, void* init_data, event_func_t on_event, void* on_event_ctx) {
   tk_thread_t* thread = NULL;
-  lite_service_t* service = lite_service_create(vt);
+  lite_service_t* service = lite_service_create(vt, init_data);
 
   return_value_if_fail(service != NULL, NULL);
 
+  lite_service_set_on_event(service, on_event, on_event_ctx);
   thread = tk_thread_create(service_entry, service);
   return_value_if_fail(thread != NULL, NULL);
   ENSURE(tk_thread_start(thread) == RET_OK);
+
+  service->thread = thread;
 
   return thread;
 }
