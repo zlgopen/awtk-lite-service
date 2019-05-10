@@ -89,6 +89,7 @@ struct _http_response_t {
   /*private*/
   wbuffer_t wbuff;
   tk_mutex_t* mutex;
+  char line_buffer[2048];
 };
 
 /**
@@ -186,6 +187,18 @@ ret_t http_response_set_fail(http_response_t* response, bool_t fail);
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
 ret_t http_response_set_uploaded_size(http_response_t* response, uint32_t uploaded_size);
+
+/**
+ * @method http_response_parse_line
+ *
+ * 解析一行数据。
+ *
+ * @param {http_response_t*} response http response对象。
+ * @param {const char*} buffer 一行数据。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+ret_t http_response_parse_line(http_response_t* response, const char* buffer);
 
 /**
  * @method http_response_lock

@@ -5,6 +5,6 @@ env=DefaultEnvironment().Clone()
 BIN_DIR=os.environ['BIN_DIR'];
 
 env['LIBS'] = ['lite_service', 'http', 'curl'] + env['LIBS']
-env.Program(os.path.join(BIN_DIR, 'demo_http_get'), ['http_get.c'])
+env.Program(os.path.join(BIN_DIR, 'demo_http'), ['demo_http.c'])
 
 

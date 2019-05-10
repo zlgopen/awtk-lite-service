@@ -131,3 +131,39 @@ ret_t http_response_destroy(http_response_t* response) {
 
   return RET_OK;
 }
+
+ret_t http_response_parse_line(http_response_t* response, const char* buffer) {
+  return_value_if_fail(response != NULL && buffer != NULL, RET_BAD_PARAMS);
+
+  char* key = NULL;
+  char* value = NULL;
+  tk_strncpy(response->line_buffer, buffer, sizeof(response->line_buffer) - 1);
+
+  key = response->line_buffer;
+  value = strchr(key, ':');
+
+  if(strncmp(key, "HTTP/", 5) == 0) {
+    char* p = strchr(key, ' ');
+    if(p != NULL) {
+      while(*p && *p == ' ') p++;
+      http_response_set_status_code(response, tk_atoi(p));
+    }
+  } else if(value != NULL) {
+    char* end = NULL;
+    *value++ = '\0';
+    while(*value && *value == ' ') value++;
+
+    end = strchr(value, '\r');
+    if(end == NULL) {
+      end = strchr(value, '\n');
+    }
+    if(end != NULL) {
+      *end = '\0';
+    }
+
+    response->header = http_header_prepend(response->header, key, value);
+  }
+
+  return RET_OK;
+}
+
