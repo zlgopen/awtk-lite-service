@@ -33,6 +33,8 @@ BEGIN_C_DECLS
  *
  * HTTP response
  *
+ * 在request->on_event回调函数中，可以直接访问本类的成员。
+ *
  */
 struct _http_response_t {
   /**
@@ -45,7 +47,7 @@ struct _http_response_t {
   /**
    * @property {http_header_t*} header
    * @annotation ["readable"]
-   * 额外的header信息。
+   * header信息。
    */
   http_header_t* header;
 
@@ -59,7 +61,7 @@ struct _http_response_t {
   /**
    * @property {uint32_t} body_size
    * @annotation ["readable"]
-   * 下载的数据的长度。
+   * 下载的数据的长度(已经下载)。
    */
   uint32_t body_size;
 

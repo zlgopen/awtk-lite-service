@@ -76,18 +76,25 @@ struct _http_request_t {
    * 取消本次请求。
    */
   bool_t abort;
+  
+  /**
+   * @property {http_response_t*} response
+   * @annotation ["readable"]
+   * 请求的结果。
+   */
+  http_response_t* response;
 
   /*private*/
   void* on_event_ctx;
   http_request_on_event_t on_event;
-
-  http_response_t* response;
 };
 
 /**
  * @method http_request_create_get
  *
  * 创建一个GET请求。
+ *
+ * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
  *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
@@ -103,6 +110,8 @@ http_request_t* http_request_create_get(const char* url, http_request_on_event_t
  *
  * 创建一个DELETE请求。
  *
+ * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
+ *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
  * @param {void*} ctx 事件回调函数的上下文。
@@ -116,6 +125,8 @@ http_request_t* http_request_create_delete(const char* url, http_request_on_even
  * @method http_request_create_put
  *
  * 创建一个PUT请求。
+ *
+ * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
  *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
@@ -134,6 +145,8 @@ http_request_t* http_request_create_put(const char* url, http_request_on_event_t
  * @method http_request_create_post
  *
  * 创建一个POST请求。
+ *
+ * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
  *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
@@ -164,7 +177,7 @@ ret_t http_request_add_header(http_request_t* request, const char* key, const ch
 /**
  * @method http_request_abort
  *
- * 设置abort标志，让服务取消本次请求。
+ * 设置abort标志，通知服务取消本次请求。
  *
  * @param {http_request_t*} request http request对象。
  *
