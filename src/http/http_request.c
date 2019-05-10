@@ -99,6 +99,14 @@ ret_t http_request_add_header(http_request_t* request, const char* key, const ch
   return RET_OK;
 }
 
+ret_t http_request_abort(http_request_t* request) {
+  return_value_if_fail(request != NULL && request->url != NULL, RET_BAD_PARAMS);
+
+  request->abort = TRUE;
+
+  return RET_OK;
+}
+
 ret_t http_request_destroy(http_request_t* request) {
   return_value_if_fail(request != NULL && request->url != NULL, RET_BAD_PARAMS);
 

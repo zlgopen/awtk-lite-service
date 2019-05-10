@@ -28,21 +28,19 @@ http_response_t* http_response_create(void) {
   http_response_t* response = TKMEM_ZALLOC(http_response_t);
   return_value_if_fail(response != NULL, NULL);
 
+  ENSURE(wbuffer_init_extendable(&(response->wbuff)) != NULL);
   response->mutex = tk_mutex_create();
   ENSURE(response->mutex != NULL);
 
   return response;
 }
 
-ret_t http_response_set_status(http_response_t* response, uint32_t code, const char* text) {
-  return_value_if_fail(response != NULL && response->status_text == NULL, RET_BAD_PARAMS);
+ret_t http_response_set_status_code(http_response_t* response, uint32_t code) {
+  return_value_if_fail(response != NULL, RET_BAD_PARAMS);
 
   return_value_if_fail(http_response_lock(response) == RET_OK, RET_FAIL);
   response->status_code = code;
 
-  if (text != NULL) {
-    response->status_text = tk_strdup(text);
-  }
   http_response_unlock(response);
 
   return RET_OK;
@@ -64,20 +62,16 @@ const char* http_response_find(http_response_t* response, const char* key) {
   return http_header_find(response->header, key);
 }
 
-ret_t http_response_set_body(http_response_t* response, const void* body, uint32_t body_size) {
+ret_t http_response_append_body_data(http_response_t* response, const void* data,
+                                     uint32_t data_size) {
   ret_t ret = RET_OK;
-  return_value_if_fail(response != NULL && body != NULL && body_size > 0, RET_BAD_PARAMS);
+  return_value_if_fail(response != NULL && data != NULL && data_size > 0, RET_BAD_PARAMS);
+
   return_value_if_fail(http_response_lock(response) == RET_OK, RET_FAIL);
-
-  response->body = TKMEM_ALLOC(body_size + 1);
-  if (response->body != NULL) {
-    response->body_size = body_size;
-    memcpy(response->body, body, body_size);
-    ((char*)(response->body))[body_size] = '\0';
-  } else {
-    ret = RET_OOM;
-  }
-
+  ret = wbuffer_write_binary(&(response->wbuff), data, data_size);
+  response->body = response->wbuff.data;
+  response->body_size = response->wbuff.cursor;
+  *((char*)(response->body) + response->body_size) = '\0';
   http_response_unlock(response);
 
   return ret;
@@ -113,16 +107,6 @@ ret_t http_response_set_uploaded_size(http_response_t* response, uint32_t upload
   return RET_OK;
 }
 
-ret_t http_response_set_downloaded_size(http_response_t* response, uint32_t downloaded_size) {
-  return_value_if_fail(response != NULL, RET_BAD_PARAMS);
-
-  return_value_if_fail(http_response_lock(response) == RET_OK, RET_FAIL);
-  response->downloaded_size = downloaded_size;
-  http_response_unlock(response);
-
-  return RET_OK;
-}
-
 ret_t http_response_lock(http_response_t* response) {
   return_value_if_fail(response != NULL, RET_BAD_PARAMS);
 
@@ -138,12 +122,11 @@ ret_t http_response_unlock(http_response_t* response) {
 ret_t http_response_destroy(http_response_t* response) {
   return_value_if_fail(response != NULL, RET_BAD_PARAMS);
 
-  TKMEM_FREE(response->body);
+  wbuffer_deinit(&(response->wbuff));
   tk_mutex_destroy(response->mutex);
-  TKMEM_FREE(response->status_text);
   http_header_destroy(response->header);
-  memset(response, 0x00, sizeof(http_response_t));
 
+  memset(response, 0x00, sizeof(http_response_t));
   TKMEM_FREE(response);
 
   return RET_OK;

@@ -70,6 +70,13 @@ struct _http_request_t {
    */
   uint32_t body_size;
 
+  /**
+   * @property {bool_t} abort
+   * @annotation ["readable"]
+   * 取消本次请求。
+   */
+  bool_t abort;
+
   /*private*/
   void* on_event_ctx;
   http_request_on_event_t on_event;
@@ -153,6 +160,17 @@ http_request_t* http_request_create_post(const char* url, http_request_on_event_
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
 ret_t http_request_add_header(http_request_t* request, const char* key, const char* value);
+
+/**
+ * @method http_request_abort
+ *
+ * 设置abort标志，让服务取消本次请求。
+ *
+ * @param {http_request_t*} request http request对象。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+ret_t http_request_abort(http_request_t* request);
 
 /**
  * @method http_request_destroy

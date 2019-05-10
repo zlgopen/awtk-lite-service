@@ -21,6 +21,7 @@
 
 #include "tkc/mem.h"
 #include "base/idle.h"
+#include "tkc/platform.h"
 #include "lite_service/lite_service.h"
 
 lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_data) {

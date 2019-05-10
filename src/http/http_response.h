@@ -23,6 +23,7 @@
 #define TK_HTTP_RESPONSE_H
 
 #include "tkc/mutex.h"
+#include "tkc/buffer.h"
 #include "http/http_common.h"
 
 BEGIN_C_DECLS
@@ -42,13 +43,6 @@ struct _http_response_t {
   uint32_t status_code;
 
   /**
-   * @property {char*} status_text
-   * @annotation ["readable"]
-   * HTTP response 的status text。
-   */
-  char* status_text;
-
-  /**
    * @property {http_header_t*} header
    * @annotation ["readable"]
    * 额外的header信息。
@@ -58,14 +52,14 @@ struct _http_response_t {
   /**
    * @property {void*} body
    * @annotation ["readable"]
-   * PUT/POST请求上传的数据。
+   * 下载的数据。
    */
   void* body;
 
   /**
    * @property {uint32_t} body_size
    * @annotation ["readable"]
-   * PUT/POST请求上传的数据的长度。
+   * 下载的数据的长度。
    */
   uint32_t body_size;
 
@@ -75,13 +69,6 @@ struct _http_response_t {
    * PUT/POST请求，已经上传的数据的长度。
    */
   uint32_t uploaded_size;
-
-  /**
-   * @property {uint32_t} downloaded_size
-   * @annotation ["readable"]
-   * GET请求，已经下载的数据的长度。
-   */
-  uint32_t downloaded_size;
 
   /**
    * @property {bool_t} done;
@@ -98,6 +85,7 @@ struct _http_response_t {
   bool_t fail;
 
   /*private*/
+  wbuffer_t wbuff;
   tk_mutex_t* mutex;
 };
 
@@ -111,17 +99,16 @@ struct _http_response_t {
 http_response_t* http_response_create(void);
 
 /**
- * @method http_response_set_status
+ * @method http_response_set_status_code
  *
  * 设置status。
  *
  * @param {http_response_t*} response http response对象。
  * @param {uint32_t} code 响应码。
- * @param {const char*} text 响应的文本。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
-ret_t http_response_set_status(http_response_t* response, uint32_t code, const char* text);
+ret_t http_response_set_status_code(http_response_t* response, uint32_t code);
 
 /**
  * @method http_response_add_header
@@ -149,17 +136,18 @@ ret_t http_response_add_header(http_response_t* response, const char* key, const
 const char* http_response_find(http_response_t* response, const char* key);
 
 /**
- * @method http_response_set_body
+ * @method http_response_append_body_data
  *
- * 设置body。
+ * 追加下载的数据。
  *
  * @param {http_response_t*} response http response对象。
- * @param {const void*} body 返回的数据。
- * @param {uint32_t} body_size 返回数据的长度。
+ * @param {const void*} body 数据。
+ * @param {uint32_t} data_size 数据的长度。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
-ret_t http_response_set_body(http_response_t* response, const void* body, uint32_t body_size);
+ret_t http_response_append_body_data(http_response_t* response, const void* data,
+                                     uint32_t data_size);
 
 /**
  * @method http_response_set_done
@@ -196,18 +184,6 @@ ret_t http_response_set_fail(http_response_t* response, bool_t fail);
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
 ret_t http_response_set_uploaded_size(http_response_t* response, uint32_t uploaded_size);
-
-/**
- * @method http_response_set_downloaded_size
- *
- * 更新已经下载数据的大小。
- *
- * @param {http_response_t*} response http response对象。
- * @param {uint32_t} downloaded_size 已经下载数据的大小。
- *
- * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
- */
-ret_t http_response_set_downloaded_size(http_response_t* response, uint32_t downloaded_size);
 
 /**
  * @method http_response_lock
