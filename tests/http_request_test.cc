@@ -14,7 +14,7 @@ TEST(HttpRequest, get) {
   const char* url = "http://www.zlg.com";
 
   http_request_t* request = http_request_create_get(url, http_request_on_event_dummy, NULL);
-  
+
   ASSERT_STREQ(HTTP_METHOD_GET, request->method);
   ASSERT_STREQ(url, request->url);
   ASSERT_EQ(request->header == NULL, TRUE);
@@ -30,7 +30,7 @@ TEST(HttpRequest, delete) {
   const char* url = "http://www.zlg.com/unused.html";
 
   http_request_t* request = http_request_create_delete(url, http_request_on_event_dummy, NULL);
-  
+
   ASSERT_STREQ(HTTP_METHOD_DELETE, request->method);
   ASSERT_STREQ(url, request->url);
   ASSERT_EQ(request->header == NULL, TRUE);
@@ -47,8 +47,9 @@ TEST(HttpRequest, put) {
   const char* data = "hello awtk";
   const char* type = "text/plain";
   uint32_t data_size = strlen(data) + 1;
-  http_request_t* request = http_request_create_put(url, http_request_on_event_dummy, NULL, type, data, data_size);
-  
+  http_request_t* request =
+      http_request_create_put(url, http_request_on_event_dummy, NULL, type, data, data_size);
+
   ASSERT_STREQ(HTTP_METHOD_PUT, request->method);
   ASSERT_STREQ(url, request->url);
   ASSERT_STREQ(http_header_find(request->header, "Content-Type"), type);
@@ -65,8 +66,9 @@ TEST(HttpRequest, post) {
   const char* data = "hello awtk";
   const char* type = "text/plain";
   uint32_t data_size = strlen(data) + 1;
-  http_request_t* request = http_request_create_post(url, http_request_on_event_dummy, NULL, type, data, data_size);
-  
+  http_request_t* request =
+      http_request_create_post(url, http_request_on_event_dummy, NULL, type, data, data_size);
+
   ASSERT_STREQ(HTTP_METHOD_POST, request->method);
   ASSERT_STREQ(url, request->url);
   ASSERT_STREQ(http_header_find(request->header, "Content-Type"), type);

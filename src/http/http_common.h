@@ -43,36 +43,39 @@ typedef struct _http_header_t http_header_t;
  */
 
 /**
- * @const HTTP_METHOD_GET 
+ * @const HTTP_METHOD_GET
  * GET请求。
  */
 #define HTTP_METHOD_GET "GET"
 
 /**
- * @const HTTP_METHOD_PUT 
+ * @const HTTP_METHOD_PUT
  * PUT请求。
  */
 #define HTTP_METHOD_PUT "PUT"
 
 /**
- * @const HTTP_METHOD_POST 
+ * @const HTTP_METHOD_POST
  * POST请求。
  */
 #define HTTP_METHOD_POST "POST"
 
 /**
- * @const HTTP_METHOD_DELETE 
+ * @const HTTP_METHOD_DELETE
  * DELETE请求。
  */
 #define HTTP_METHOD_DELETE "DELETE"
-
 
 typedef enum _http_event_t {
   HTTP_EVENT_START = 512,
   HTTP_EVENT_PROGRESS,
   HTTP_EVENT_ERROR,
   HTTP_EVENT_DONE
-}http_event_t;
+} http_event_t;
+
+typedef enum _http_cmd_t {
+  HTTP_CMD_STOP = 1,
+} http_cmd_t;
 
 END_C_DECLS
 

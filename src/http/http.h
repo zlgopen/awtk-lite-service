@@ -31,7 +31,7 @@ BEGIN_C_DECLS
  * @method http_request
  *
  * 发起一个HTTP请求。
- * 
+ *
  * @param {http_request_t*} request HTTP请求对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -43,7 +43,7 @@ ret_t http_request(http_request_t* request);
  * @method http_init
  *
  * 全局初始化。
- * 
+ *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  *
  */
@@ -53,7 +53,7 @@ ret_t http_init(void);
  * @method http_deinit
  *
  * 全局~初始化。
- * 
+ *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  *
  */
@@ -62,4 +62,3 @@ ret_t http_deinit(void);
 END_C_DECLS
 
 #endif /*TK_HTTP_H*/
-

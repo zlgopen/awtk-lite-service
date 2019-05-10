@@ -6,18 +6,19 @@
 using std::string;
 
 static string s_log;
-static ret_t lite_service_on_request_log(lite_service_t* service, uint32_t cmd, uint32_t payload_size, const void* payload) {
+static ret_t lite_service_on_request_log(lite_service_t* service, uint32_t cmd,
+                                         uint32_t payload_size, const void* payload) {
   char buff[512];
   string& str = s_log;
-  if(payload != NULL) {
-    snprintf(buff, sizeof(buff)-1, "%d %d %s", cmd, payload_size, (const char*)payload);
+  if (payload != NULL) {
+    snprintf(buff, sizeof(buff) - 1, "%d %d %s", cmd, payload_size, (const char*)payload);
   } else {
-    snprintf(buff, sizeof(buff)-1, "%d %d ", cmd, payload_size);
+    snprintf(buff, sizeof(buff) - 1, "%d %d ", cmd, payload_size);
   }
 
   str += buff;
 
-  if(cmd == 0) {
+  if (cmd == 0) {
     return RET_DONE;
   }
 

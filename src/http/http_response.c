@@ -35,18 +35,21 @@ http_response_t* http_response_create(void) {
 }
 
 ret_t http_response_set_status(http_response_t* response, uint32_t code, const char* text) {
-  return_value_if_fail(response != NULL && text != NULL && response->status_text == NULL, RET_BAD_PARAMS);
+  return_value_if_fail(response != NULL && response->status_text == NULL, RET_BAD_PARAMS);
 
   return_value_if_fail(http_response_lock(response) == RET_OK, RET_FAIL);
   response->status_code = code;
-  response->status_text = tk_strdup(text);
+
+  if (text != NULL) {
+    response->status_text = tk_strdup(text);
+  }
   http_response_unlock(response);
 
   return RET_OK;
 }
 
 ret_t http_response_add_header(http_response_t* response, const char* key, const char* value) {
-  return_value_if_fail(response != NULL && key != NULL  && value != NULL, RET_BAD_PARAMS);
+  return_value_if_fail(response != NULL && key != NULL && value != NULL, RET_BAD_PARAMS);
 
   return_value_if_fail(http_response_lock(response) == RET_OK, RET_FAIL);
   response->header = http_header_prepend(response->header, key, value);
@@ -61,13 +64,13 @@ const char* http_response_find(http_response_t* response, const char* key) {
   return http_header_find(response->header, key);
 }
 
-ret_t http_response_set_body(http_response_t* response, void* body, uint32_t body_size) {
+ret_t http_response_set_body(http_response_t* response, const void* body, uint32_t body_size) {
   ret_t ret = RET_OK;
   return_value_if_fail(response != NULL && body != NULL && body_size > 0, RET_BAD_PARAMS);
   return_value_if_fail(http_response_lock(response) == RET_OK, RET_FAIL);
 
   response->body = TKMEM_ALLOC(body_size + 1);
-  if(response->body != NULL) {
+  if (response->body != NULL) {
     response->body_size = body_size;
     memcpy(response->body, body, body_size);
     ((char*)(response->body))[body_size] = '\0';
@@ -89,7 +92,6 @@ ret_t http_response_set_done(http_response_t* response, bool_t done) {
 
   return RET_OK;
 }
-
 
 ret_t http_response_set_fail(http_response_t* response, bool_t fail) {
   return_value_if_fail(response != NULL, RET_BAD_PARAMS);
@@ -146,4 +148,3 @@ ret_t http_response_destroy(http_response_t* response) {
 
   return RET_OK;
 }
-

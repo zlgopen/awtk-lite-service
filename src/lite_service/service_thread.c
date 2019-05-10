@@ -33,7 +33,8 @@ static void* service_entry(void* args) {
   return NULL;
 }
 
-tk_thread_t* service_thread_start(lite_service_vtable_t* vt, void* init_data, event_func_t on_event, void* on_event_ctx) {
+tk_thread_t* service_thread_start(const lite_service_vtable_t* vt, void* init_data,
+                                  event_func_t on_event, void* on_event_ctx) {
   tk_thread_t* thread = NULL;
   lite_service_t* service = lite_service_create(vt, init_data);
 
@@ -49,7 +50,8 @@ tk_thread_t* service_thread_start(lite_service_vtable_t* vt, void* init_data, ev
   return thread;
 }
 
-ret_t service_thread_request(tk_thread_t* thread, uint32_t cmd, uint32_t data_size, const void* data) {
+ret_t service_thread_request(tk_thread_t* thread, uint32_t cmd, uint32_t data_size,
+                             const void* data) {
   lite_service_t* service = tk_thread_get_args(thread);
   return_value_if_fail(service != NULL, RET_BAD_PARAMS);
 

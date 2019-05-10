@@ -47,13 +47,13 @@ struct _http_response_t {
    * HTTP response 的status text。
    */
   char* status_text;
-  
+
   /**
    * @property {http_header_t*} header
    * @annotation ["readable"]
    * 额外的header信息。
    */
-  http_header_t *header;
+  http_header_t* header;
 
   /**
    * @property {void*} body
@@ -68,14 +68,14 @@ struct _http_response_t {
    * PUT/POST请求上传的数据的长度。
    */
   uint32_t body_size;
-  
+
   /**
    * @property {uint32_t} uploaded_size
    * @annotation ["readable"]
    * PUT/POST请求，已经上传的数据的长度。
    */
   uint32_t uploaded_size;
-  
+
   /**
    * @property {uint32_t} downloaded_size
    * @annotation ["readable"]
@@ -89,7 +89,7 @@ struct _http_response_t {
    * 整个请求完成。
    */
   bool_t done;
-  
+
   /**
    * @property {bool_t} fail;
    * @annotation ["readable"]
@@ -105,7 +105,7 @@ struct _http_response_t {
  * @method http_response_create
  *
  * 创建一个response对象。
- * 
+ *
  * @return {http_response_t*} 返回response对象。
  */
 http_response_t* http_response_create(void);
@@ -114,7 +114,7 @@ http_response_t* http_response_create(void);
  * @method http_response_set_status
  *
  * 设置status。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  * @param {uint32_t} code 响应码。
  * @param {const char*} text 响应的文本。
@@ -127,7 +127,7 @@ ret_t http_response_set_status(http_response_t* response, uint32_t code, const c
  * @method http_response_add_header
  *
  * 增加一个header。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  * @param {const char*} key header的键名。
  * @param {const char*} value header的键值。
@@ -140,7 +140,7 @@ ret_t http_response_add_header(http_response_t* response, const char* key, const
  * @method http_response_find_header
  *
  * 查找指定的key，如果找到返回它的value。
- * 
+ *
  * @param {http_response_t*} response response对象。
  * @param {const char*} key header的key。
  *
@@ -152,20 +152,20 @@ const char* http_response_find(http_response_t* response, const char* key);
  * @method http_response_set_body
  *
  * 设置body。
- * 
+ *
  * @param {http_response_t*} response http response对象。
- * @param {void*} body 返回的数据。
+ * @param {const void*} body 返回的数据。
  * @param {uint32_t} body_size 返回数据的长度。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
-ret_t http_response_set_body(http_response_t* response, void* body, uint32_t body_size);
+ret_t http_response_set_body(http_response_t* response, const void* body, uint32_t body_size);
 
 /**
  * @method http_response_set_done
  *
  * 设置完成标志。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  * @param {bool_t} done 是否完成。
  *
@@ -177,7 +177,7 @@ ret_t http_response_set_done(http_response_t* response, bool_t done);
  * @method http_response_set_fail
  *
  * 设置失败标志。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  * @param {bool_t} fail 是否失败。
  *
@@ -189,7 +189,7 @@ ret_t http_response_set_fail(http_response_t* response, bool_t fail);
  * @method http_response_set_uploaded_size
  *
  * 更新已经上传数据的大小。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  * @param {uint32_t} uploaded_size 已经上传数据的大小。
  *
@@ -201,7 +201,7 @@ ret_t http_response_set_uploaded_size(http_response_t* response, uint32_t upload
  * @method http_response_set_downloaded_size
  *
  * 更新已经下载数据的大小。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  * @param {uint32_t} downloaded_size 已经下载数据的大小。
  *
@@ -213,7 +213,7 @@ ret_t http_response_set_downloaded_size(http_response_t* response, uint32_t down
  * @method http_response_lock
  *
  * lock response对象。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -224,7 +224,7 @@ ret_t http_response_lock(http_response_t* response);
  * @method http_response_unlock
  *
  * lock response对象。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -235,7 +235,7 @@ ret_t http_response_unlock(http_response_t* response);
  * @method http_response_destroy
  *
  * 销毁response对象。
- * 
+ *
  * @param {http_response_t*} response http response对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -245,4 +245,3 @@ ret_t http_response_destroy(http_response_t* response);
 END_C_DECLS
 
 #endif /*TK_HTTP_RESPONSE_H*/
-

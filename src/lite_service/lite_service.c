@@ -19,14 +19,15 @@
  *
  */
 
-
 #include "tkc/mem.h"
 #include "base/idle.h"
 #include "lite_service/lite_service.h"
 
 lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_data) {
   lite_service_t* service = NULL;
-  return_value_if_fail(vt != NULL && (vt->run != NULL || vt->on_request != NULL) && vt->size >= sizeof(lite_service_t), NULL);
+  return_value_if_fail(vt != NULL && (vt->run != NULL || vt->on_request != NULL) &&
+                           vt->size >= sizeof(lite_service_t),
+                       NULL);
 
   service = (lite_service_t*)TKMEM_ALLOC(vt->size);
   return_value_if_fail(service != NULL, NULL);
@@ -35,17 +36,20 @@ lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_
 
   service->vt = vt;
   service->init_data = init_data;
-  if(vt->queue_size > 128 && vt->on_request != NULL) {
-    service->queue = request_queue_create(vt->queue_size, vt->max_payload_size, vt->on_request, service); 
+  if (vt->queue_size > 128 && vt->on_request != NULL) {
+    request_queue_on_request_t on_request = (request_queue_on_request_t)(vt->on_request);
+    service->queue =
+        request_queue_create(vt->queue_size, vt->max_payload_size, on_request, service);
   }
 
   return service;
 }
 
 static ret_t lite_service_run_default(lite_service_t* service) {
-  return_value_if_fail(service != NULL && service->vt != NULL && service->vt->on_request != NULL, RET_BAD_PARAMS);
+  return_value_if_fail(service != NULL && service->vt != NULL && service->vt->on_request != NULL,
+                       RET_BAD_PARAMS);
 
-  while(request_queue_process(service->queue, 10) == RET_OK) {
+  while (request_queue_process(service->queue, 10) == RET_OK) {
     sleep_ms(100);
   }
 
@@ -55,7 +59,7 @@ static ret_t lite_service_run_default(lite_service_t* service) {
 ret_t lite_service_run(lite_service_t* service) {
   return_value_if_fail(service != NULL && service->vt != NULL, RET_BAD_PARAMS);
 
-  if(service->vt->run != NULL) {
+  if (service->vt->run != NULL) {
     return service->vt->run(service);
   } else {
     return lite_service_run_default(service);
@@ -75,13 +79,13 @@ typedef struct _idle_data_t {
   event_func_t on_event;
   void* on_event_ctx;
   char event[4];
-}idle_data_t;
+} idle_data_t;
 
 static ret_t lite_service_dispatch_in_idle(const idle_info_t* info) {
   idle_data_t* data = (idle_data_t*)(info->ctx);
   event_t* e = (event_t*)(data->event);
 
-  data->on_event(data->on_event, e);
+  data->on_event(data->on_event_ctx, e);
 
   TKMEM_FREE(data);
 
@@ -92,7 +96,7 @@ ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size) {
   idle_data_t* data = NULL;
   return_value_if_fail(service != NULL && service->vt != NULL && e != NULL, RET_BAD_PARAMS);
 
-  if(service->on_event != NULL) {
+  if (service->on_event != NULL) {
     data = (idle_data_t*)TKMEM_ALLOC(sizeof(idle_data_t) + size);
     return_value_if_fail(data != NULL, RET_OOM);
 
@@ -106,8 +110,10 @@ ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size) {
   return RET_OK;
 }
 
-ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_size, const void* data) {
-  return_value_if_fail(service != NULL && service->vt != NULL && service->queue != NULL, RET_BAD_PARAMS);
+ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_size,
+                           const void* data) {
+  return_value_if_fail(service != NULL && service->vt != NULL && service->queue != NULL,
+                       RET_BAD_PARAMS);
 
   return request_queue_send(service->queue, cmd, data_size, data);
 }
@@ -115,7 +121,7 @@ ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_
 ret_t lite_service_destroy(lite_service_t* service) {
   return_value_if_fail(service != NULL && service->vt != NULL, RET_BAD_PARAMS);
 
-  if(service->vt->on_destroy != NULL) {
+  if (service->vt->on_destroy != NULL) {
     service->vt->on_destroy(service);
   }
 
@@ -126,5 +132,3 @@ ret_t lite_service_destroy(lite_service_t* service) {
 
   return RET_OK;
 }
-
-

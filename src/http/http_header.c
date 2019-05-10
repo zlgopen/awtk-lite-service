@@ -39,7 +39,7 @@ http_header_t* http_header_create(const char* key, const char* value) {
   return_value_if_fail(header != NULL, NULL);
 
   header->next = NULL;
-  header->key = ((uint8_t*)header) + sizeof(http_header_t);
+  header->key = ((char*)header) + sizeof(http_header_t);
   header->value = header->key + key_size;
 
   memcpy(header->key, key, key_size);
@@ -61,8 +61,8 @@ const char* http_header_find(http_header_t* header, const char* key) {
   http_header_t* iter = header;
   return_value_if_fail(key != NULL, NULL);
 
-  while(iter != NULL) {
-    if(tk_str_eq(iter->key, key)) {
+  while (iter != NULL) {
+    if (tk_str_eq(iter->key, key)) {
       return iter->value;
     }
 
@@ -75,7 +75,7 @@ const char* http_header_find(http_header_t* header, const char* key) {
 ret_t http_header_destroy(http_header_t* header) {
   http_header_t* iter = header;
 
-  while(iter != NULL) {
+  while (iter != NULL) {
     http_header_t* next = iter->next;
     TKMEM_FREE(next);
     iter = next;
@@ -83,5 +83,3 @@ ret_t http_header_destroy(http_header_t* header) {
 
   return RET_OK;
 }
-
-

@@ -37,7 +37,8 @@ typedef struct _lite_service_vtable_t lite_service_vtable_t;
 
 typedef ret_t (*lite_service_run_t)(lite_service_t* service);
 typedef ret_t (*lite_service_on_destroy_t)(lite_service_t* service);
-typedef ret_t (*lite_service_on_request_t)(lite_service_t* service, uint32_t cmd, uint32_t data_size, const void* data);
+typedef ret_t (*lite_service_on_request_t)(lite_service_t* service, uint32_t cmd,
+                                           uint32_t data_size, const void* data);
 
 struct _lite_service_vtable_t {
   uint32_t size;
@@ -84,7 +85,7 @@ lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_
  * @method lite_service_run
  *
  * 运行服务(由服务线程调用)。
- * 
+ *
  * @param {lite_service_t*} service lite_service对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -95,7 +96,7 @@ ret_t lite_service_run(lite_service_t* service);
  * @method lite_service_set_on_event
  *
  * 注册服务的事件。事件处理函数自动放到GUI线程执行。
- * 
+ *
  * @param {lite_service_t*} service lite_service对象。
  * @param {event_func_t} on_event 事件处理函数。
  * @param {void*} ctx 事件处理函数的上下文。
@@ -108,7 +109,7 @@ uint32_t lite_service_set_on_event(lite_service_t* service, event_func_t on_even
  * @method lite_service_request
  *
  * 请求服务。
- * 
+ *
  * @param {lite_service_t*} service lite_service对象。
  * @param {uint32_t} cmd 命令ID。
  * @param {uint32_t} data_size 数据长度。
@@ -116,18 +117,21 @@ uint32_t lite_service_set_on_event(lite_service_t* service, event_func_t on_even
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
-ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_size, const void* data);
+ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_size,
+                           const void* data);
 
 /**
  * @method lite_service_destroy
  *
  * 销毁服务。
- * 
+ *
  * @param {lite_service_t*} service lite_service对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
 ret_t lite_service_destroy(lite_service_t* service);
+
+ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size);
 
 END_C_DECLS
 

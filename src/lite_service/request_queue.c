@@ -23,7 +23,8 @@
 #include "tkc/mutex.h"
 #include "lite_service/request_queue.h"
 
-request_queue_t* request_queue_create(uint32_t size, uint32_t max_payload_size, request_queue_on_request_t on_request, void* on_request_ctx) {
+request_queue_t* request_queue_create(uint32_t size, uint32_t max_payload_size,
+                                      request_queue_on_request_t on_request, void* on_request_ctx) {
   request_queue_t* q = NULL;
   return_value_if_fail(size >= 128 && max_payload_size >= 8 && on_request != NULL, NULL);
 
@@ -48,16 +49,16 @@ request_queue_t* request_queue_create(uint32_t size, uint32_t max_payload_size, 
   return q;
 
 error:
-  if(q != NULL) {
-    if(q->buff != NULL) {
+  if (q != NULL) {
+    if (q->buff != NULL) {
       TKMEM_FREE(q->buff);
     }
 
-    if(q->mutex != NULL) {
+    if (q->mutex != NULL) {
       tk_mutex_destroy(q->mutex);
     }
 
-    if(q->payload != NULL) {
+    if (q->payload != NULL) {
       TKMEM_FREE(q->payload);
     }
   }
@@ -69,9 +70,9 @@ uint32_t request_queue_get_available_space(request_queue_t* q) {
   uint32_t available = 0;
   return_value_if_fail(q != NULL && q->buff != NULL, 0);
 
-  if(q->full) {
+  if (q->full) {
     available = 0;
-  } else if(q->w < q->r) {
+  } else if (q->w < q->r) {
     available = q->r - q->w;
   } else {
     available = q->r + (q->size - q->w);
@@ -84,9 +85,9 @@ uint32_t request_queue_get_available_data(request_queue_t* q) {
   uint32_t available = 0;
   return_value_if_fail(q != NULL && q->buff != NULL, 0);
 
-  if(q->full) {
+  if (q->full) {
     available = q->size;
-  } else if(q->r <= q->w) {
+  } else if (q->r <= q->w) {
     available = q->w - q->r;
   } else {
     available = q->w + (q->size - q->r);
@@ -99,18 +100,18 @@ ret_t request_queue_write_data(request_queue_t* q, const uint8_t* payload, uint3
   uint32_t i = 0;
   return_value_if_fail(q != NULL && size <= request_queue_get_available_space(q), RET_BAD_PARAMS);
 
-  for(i = 0; i < size; i++) {
-    if(q->w == q->size) {
+  for (i = 0; i < size; i++) {
+    if (q->w == q->size) {
       q->w = 0;
     }
     q->buff[q->w++] = payload[i];
   }
-  
-  if(q->w == q->size) {
+
+  if (q->w == q->size) {
     q->w = 0;
   }
-  
-  if(q->r == q->w) {
+
+  if (q->r == q->w) {
     q->full = TRUE;
   }
 
@@ -121,23 +122,23 @@ ret_t request_queue_read_data(request_queue_t* q, uint8_t* payload, uint32_t siz
   uint32_t i = 0;
   return_value_if_fail(q != NULL && size <= request_queue_get_available_data(q), RET_BAD_PARAMS);
 
-  for(i = 0; i < size; i++) {
-    if(q->r == q->size) {
+  for (i = 0; i < size; i++) {
+    if (q->r == q->size) {
       q->r = 0;
     }
     payload[i] = q->buff[q->r++];
   }
 
   q->full = FALSE;
-  if(q->r == q->size) {
+  if (q->r == q->size) {
     q->r = 0;
   }
 
   return RET_OK;
-    
 }
 
-ret_t request_queue_send(request_queue_t* q, uint32_t cmd, uint32_t payload_size, const void* payload) {
+ret_t request_queue_send(request_queue_t* q, uint32_t cmd, uint32_t payload_size,
+                         const void* payload) {
   uint32_t size = sizeof(cmd) + sizeof(payload_size) + payload_size;
   return_value_if_fail(q != NULL && request_queue_get_available_space(q) >= size, RET_BAD_PARAMS);
   return_value_if_fail(payload_size <= q->max_payload_size, RET_BAD_PARAMS);
@@ -145,8 +146,9 @@ ret_t request_queue_send(request_queue_t* q, uint32_t cmd, uint32_t payload_size
   return_value_if_fail(tk_mutex_lock(q->mutex) == RET_OK, RET_FAIL);
 
   ENSURE(request_queue_write_data(q, (const uint8_t*)(&cmd), sizeof(cmd)) == RET_OK);
-  ENSURE(request_queue_write_data(q, (const uint8_t*)(&payload_size), sizeof(payload_size)) == RET_OK);
-  if(payload_size > 0 && payload != NULL) {
+  ENSURE(request_queue_write_data(q, (const uint8_t*)(&payload_size), sizeof(payload_size)) ==
+         RET_OK);
+  if (payload_size > 0 && payload != NULL) {
     ENSURE(request_queue_write_data(q, payload, payload_size) == RET_OK);
   }
 
@@ -164,15 +166,15 @@ ret_t request_queue_process(request_queue_t* q, uint32_t max_requests) {
 
   return_value_if_fail(tk_mutex_lock(q->mutex) == RET_OK, RET_FAIL);
 
-  for(i = 0; i < max_requests; i++) {
-    if(request_queue_get_available_data(q) >= 8) {
+  for (i = 0; i < max_requests; i++) {
+    if (request_queue_get_available_data(q) >= 8) {
       memset(q->payload, 0x00, q->max_payload_size);
       ENSURE(request_queue_read_data(q, (uint8_t*)(&cmd), sizeof(cmd)) == RET_OK);
       ENSURE(request_queue_read_data(q, (uint8_t*)(&payload_size), sizeof(payload_size)) == RET_OK);
       ENSURE(request_queue_read_data(q, q->payload, payload_size) == RET_OK);
 
       ret = q->on_request(q->on_request_ctx, cmd, payload_size, q->payload);
-      if(ret != RET_OK) {
+      if (ret != RET_OK) {
         break;
       }
     } else {
@@ -198,5 +200,3 @@ ret_t request_queue_destroy(request_queue_t* q) {
 
   return RET_OK;
 }
-
-

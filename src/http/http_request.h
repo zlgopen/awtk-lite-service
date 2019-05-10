@@ -48,13 +48,13 @@ struct _http_request_t {
    * method。
    */
   const char* method;
-  
+
   /**
    * @property {http_header_t*} header
    * @annotation ["readable"]
    * 额外的header信息。
    */
-  http_header_t *header;
+  http_header_t* header;
 
   /**
    * @property {void*} body
@@ -81,33 +81,35 @@ struct _http_request_t {
  * @method http_request_create_get
  *
  * 创建一个GET请求。
- * 
+ *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
  * @param {void*} ctx 事件回调函数的上下文。
  *
  * @return {http_request_t*} 返回request对象。
  */
-http_request_t* http_request_create_get(const char* url, http_request_on_event_t on_event, void* ctx);
+http_request_t* http_request_create_get(const char* url, http_request_on_event_t on_event,
+                                        void* ctx);
 
 /**
  * @method http_request_create_delete
  *
  * 创建一个DELETE请求。
- * 
+ *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
  * @param {void*} ctx 事件回调函数的上下文。
  *
  * @return {http_request_t*} 返回request对象。
  */
-http_request_t* http_request_create_delete(const char* url, http_request_on_event_t on_event, void* ctx);
+http_request_t* http_request_create_delete(const char* url, http_request_on_event_t on_event,
+                                           void* ctx);
 
 /**
  * @method http_request_create_put
  *
  * 创建一个PUT请求。
- * 
+ *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
  * @param {void*} ctx 事件回调函数的上下文。
@@ -117,14 +119,15 @@ http_request_t* http_request_create_delete(const char* url, http_request_on_even
  *
  * @return {http_request_t*} 返回request对象。
  */
-http_request_t* http_request_create_put(const char* url, http_request_on_event_t on_event, void* ctx, 
-    const char* content_type, const void* data, uint32_t data_size);
+http_request_t* http_request_create_put(const char* url, http_request_on_event_t on_event,
+                                        void* ctx, const char* content_type, const void* data,
+                                        uint32_t data_size);
 
 /**
  * @method http_request_create_post
  *
  * 创建一个POST请求。
- * 
+ *
  * @param {const char*} url url。
  * @param {http_request_on_event_t} on_event 事件回调函数。
  * @param {void*} ctx 事件回调函数的上下文。
@@ -134,14 +137,15 @@ http_request_t* http_request_create_put(const char* url, http_request_on_event_t
  *
  * @return {http_request_t*} 返回request对象。
  */
-http_request_t* http_request_create_post(const char* url, http_request_on_event_t on_event, void* ctx, 
-    const char* content_type, const void* data, uint32_t data_size);
+http_request_t* http_request_create_post(const char* url, http_request_on_event_t on_event,
+                                         void* ctx, const char* content_type, const void* data,
+                                         uint32_t data_size);
 
 /**
  * @method http_request_add_header
  *
  * 增加一个header。
- * 
+ *
  * @param {http_request_t*} request http request对象。
  * @param {const char*} key header的键名。
  * @param {const char*} value header的键值。
@@ -154,7 +158,7 @@ ret_t http_request_add_header(http_request_t* request, const char* key, const ch
  * @method http_request_destroy
  *
  * 销毁request对象。
- * 
+ *
  * @param {http_request_t*} request http request对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -164,4 +168,3 @@ ret_t http_request_destroy(http_request_t* request);
 END_C_DECLS
 
 #endif /*TK_HTTP_REQUEST_H*/
-
