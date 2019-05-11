@@ -46,8 +46,7 @@ static ret_t buttons_enable(bool_t start) {
 
 static ret_t on_http_event(void* ctx, http_request_t* req, http_response_t* resp) {
   char buff[128];
-  tk_snprintf(buff, sizeof(buff), 
-      "status=%d downloaded=%u", resp->status_code, resp->body_size);
+  tk_snprintf(buff, sizeof(buff), "status=%d downloaded=%u", resp->status_code, resp->body_size);
 
   widget_set_text_utf8(s_app.status, buff);
   widget_invalidate_force(s_app.status, NULL);
@@ -81,8 +80,8 @@ static ret_t on_put_click(void* ctx, event_t* e) {
   const char* url = "http://127.0.0.1:8000/put";
   const char* data = "this is put request";
 
-  s_app.request = http_request_create_put(url, on_http_event, widget, "text/plain", 
-      data, strlen(data));
+  s_app.request =
+      http_request_create_put(url, on_http_event, widget, "text/plain", data, strlen(data));
 
   http_request(s_app.request);
 
@@ -109,8 +108,8 @@ static ret_t on_post_click(void* ctx, event_t* e) {
   const char* url = "http://127.0.0.1:8000/post";
   const char* data = "this is post request";
 
-  s_app.request = http_request_create_post(url, on_http_event, widget, "text/plain", 
-      data, strlen(data));
+  s_app.request =
+      http_request_create_post(url, on_http_event, widget, "text/plain", data, strlen(data));
 
   http_request(s_app.request);
 
@@ -144,15 +143,15 @@ void application_init() {
   widget_set_text(get, L"get");
   widget_set_self_layout_params(get, "center", "middle", "50%", "30");
   widget_on(get, EVT_CLICK, on_get_click, get);
-  
+
   widget_set_text(put, L"put");
   widget_set_self_layout_params(put, "center", "middle:40", "50%", "30");
   widget_on(put, EVT_CLICK, on_put_click, put);
-  
+
   widget_set_text(del, L"del");
   widget_set_self_layout_params(del, "center", "middle:80", "50%", "30");
   widget_on(del, EVT_CLICK, on_del_click, del);
-  
+
   widget_set_text(post, L"post");
   widget_set_self_layout_params(post, "center", "middle:120", "50%", "30");
   widget_on(post, EVT_CLICK, on_post_click, post);
@@ -160,7 +159,6 @@ void application_init() {
   widget_set_text(abort, L"Abort");
   widget_set_self_layout_params(abort, "center", "m:160", "50%", "30");
   widget_on(abort, EVT_CLICK, on_abort_click, abort);
-  
 
   s_app.get = get;
   s_app.put = put;

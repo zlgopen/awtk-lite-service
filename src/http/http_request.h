@@ -76,7 +76,7 @@ struct _http_request_t {
    * 取消本次请求。
    */
   bool_t abort;
-  
+
   /**
    * @property {http_response_t*} response
    * @annotation ["readable"]

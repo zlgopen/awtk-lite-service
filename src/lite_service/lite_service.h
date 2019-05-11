@@ -25,6 +25,7 @@
 #include "tkc/mutex.h"
 #include "tkc/thread.h"
 #include "tkc/emitter.h"
+#include "base/idle.h"
 #include "lite_service/request_queue.h"
 
 BEGIN_C_DECLS
@@ -34,6 +35,8 @@ typedef struct _lite_service_t lite_service_t;
 
 struct _lite_service_vtable_t;
 typedef struct _lite_service_vtable_t lite_service_vtable_t;
+
+typedef ret_t (*lite_service_idle_queue_t)(idle_func_t on_idle, void* ctx);
 
 typedef ret_t (*lite_service_run_t)(lite_service_t* service);
 typedef ret_t (*lite_service_on_destroy_t)(lite_service_t* service);
@@ -67,6 +70,9 @@ struct _lite_service_t {
   void* on_event_ctx;
 
   tk_thread_t* thread;
+
+  /*for test injection*/
+  lite_service_idle_queue_t idle_queue;
 };
 
 /**
@@ -121,6 +127,19 @@ ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_
                            const void* data);
 
 /**
+ * @method lite_service_dispatch
+ *
+ * 分发事件(放在UI的idle中执行)。
+ *
+ * @param {lite_service_t*} service lite_service对象。
+ * @param {event_t*} event 事件。
+ * @param {uint32_t} event_size 事件的大小。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+ret_t lite_service_dispatch(lite_service_t* service, event_t* event, uint32_t event_size);
+
+/**
  * @method lite_service_destroy
  *
  * 销毁服务。
@@ -131,7 +150,9 @@ ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_
  */
 ret_t lite_service_destroy(lite_service_t* service);
 
-ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size);
+
+/*for tester injection*/
+ret_t lite_service_set_idle_queue(lite_service_t* service, lite_service_idle_queue_t idle_queue);
 
 END_C_DECLS
 

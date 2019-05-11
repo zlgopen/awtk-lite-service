@@ -38,10 +38,10 @@ TEST(HttpResponse, parse_line) {
   http_response_t* response = http_response_create();
   ASSERT_EQ(http_response_parse_line(response, "HTTP/1.1 200 OK"), RET_OK);
   ASSERT_EQ(response->status_code, 200);
-  
+
   ASSERT_EQ(http_response_parse_line(response, "HTTP/1.1 404 Not Found\r\n"), RET_OK);
   ASSERT_EQ(response->status_code, 404);
-  
+
   ASSERT_EQ(http_response_parse_line(response, "Content-Length: 100\r\n"), RET_OK);
   ASSERT_STREQ(http_response_find(response, "Content-Length"), "100");
 

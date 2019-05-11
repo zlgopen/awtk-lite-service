@@ -47,13 +47,13 @@ typedef struct _http_agent_curl_t {
 static ret_t http_agent_set_header(http_agent_curl_t* http, http_header_t* header) {
   char str[512];
   http_header_t* iter = header;
-  struct curl_slist *request_header = NULL;
+  struct curl_slist* request_header = NULL;
 
-  if(header == NULL) {
+  if (header == NULL) {
     return RET_OK;
   }
 
-  while(iter != NULL) {
+  while (iter != NULL) {
     tk_snprintf(str, sizeof(str) - 1, "%s: %s", iter->key, iter->value);
     request_header = curl_slist_append(request_header, str);
 
@@ -66,7 +66,6 @@ static ret_t http_agent_set_header(http_agent_curl_t* http, http_header_t* heade
   return RET_OK;
 }
 
-
 static ret_t http_agent_dispatch(lite_service_t* service, http_event_t type) {
   event_t e = event_init(type, service);
 
@@ -78,7 +77,7 @@ static int http_on_curl_progress(void* ctx, curl_off_t dltotal, curl_off_t dlnow
   long http_code = 0;
   http_agent_curl_t* http = (http_agent_curl_t*)ctx;
 
-  if(!(http->response->status_code)) {
+  if (!(http->response->status_code)) {
     curl_easy_getinfo(http->curl, CURLINFO_RESPONSE_CODE, &http_code);
     http_response_set_status_code(http->response, http_code);
   }
@@ -113,16 +112,13 @@ size_t http_on_curl_body_data(char* buffer, size_t size, size_t nmemb, void* ctx
   return total_size;
 }
 
-static size_t http_on_curl_header_data(char *buffer, size_t size,
-                              size_t nitems, void *ctx)
-{
+static size_t http_on_curl_header_data(char* buffer, size_t size, size_t nitems, void* ctx) {
   http_agent_curl_t* http = (http_agent_curl_t*)ctx;
 
   http_response_parse_line(http->response, buffer);
 
   return size * nitems;
 }
-
 
 static CURL* curl_create_with_request(lite_service_t* service, http_request_t* request) {
   CURL* curl = curl_easy_init();
@@ -154,11 +150,11 @@ static CURL* curl_create_with_request(lite_service_t* service, http_request_t* r
   curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request->method);
 
-  if(request->header != NULL) {
+  if (request->header != NULL) {
     http_agent_set_header(http, request->header);
   }
 
-  if(request->body != NULL && request->body_size > 0) {
+  if (request->body != NULL && request->body_size > 0) {
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request->body);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request->body_size);
   }
@@ -201,7 +197,7 @@ static ret_t http_agent_run(lite_service_t* service) {
 
 static ret_t http_agent_on_destroy(lite_service_t* service) {
   http_agent_curl_t* http = (http_agent_curl_t*)service;
-  if(http->request_header != NULL) {
+  if (http->request_header != NULL) {
     curl_slist_free_all(http->request_header);
   }
 

@@ -20,7 +20,6 @@
  */
 
 #include "tkc/mem.h"
-#include "base/idle.h"
 #include "tkc/platform.h"
 #include "lite_service/lite_service.h"
 
@@ -36,6 +35,7 @@ lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_
   memset(service, 0x00, vt->size);
 
   service->vt = vt;
+  service->thread = NULL;
   service->init_data = init_data;
   if (vt->queue_size > 128 && vt->on_request != NULL) {
     request_queue_on_request_t on_request = (request_queue_on_request_t)(vt->on_request);
@@ -93,7 +93,7 @@ static ret_t lite_service_dispatch_in_idle(const idle_info_t* info) {
   return RET_REMOVE;
 }
 
-ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size) {
+ret_t lite_service_dispatch(lite_service_t* service, event_t* e, uint32_t size) {
   idle_data_t* data = NULL;
   return_value_if_fail(service != NULL && service->vt != NULL && e != NULL, RET_BAD_PARAMS);
 
@@ -105,7 +105,11 @@ ret_t lite_service_dispatch(lite_service_t* service, event_t* e, size_t size) {
     data->on_event = service->on_event;
     data->on_event_ctx = service->on_event_ctx;
 
-    idle_queue(lite_service_dispatch_in_idle, data);
+    if (service->idle_queue) {
+      service->idle_queue(lite_service_dispatch_in_idle, data);
+    } else {
+      idle_queue(lite_service_dispatch_in_idle, data);
+    }
   }
 
   return RET_OK;
@@ -119,11 +123,23 @@ ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_
   return request_queue_send(service->queue, cmd, data_size, data);
 }
 
+ret_t lite_service_set_idle_queue(lite_service_t* service, lite_service_idle_queue_t idle_queue) {
+  return_value_if_fail(service != NULL, RET_BAD_PARAMS);
+
+  service->idle_queue = idle_queue;
+
+  return RET_OK;
+}
+
 ret_t lite_service_destroy(lite_service_t* service) {
   return_value_if_fail(service != NULL && service->vt != NULL, RET_BAD_PARAMS);
 
   if (service->vt->on_destroy != NULL) {
     service->vt->on_destroy(service);
+  }
+
+  if (service->thread != NULL) {
+    tk_thread_destroy(service->thread);
   }
 
   request_queue_destroy(service->queue);

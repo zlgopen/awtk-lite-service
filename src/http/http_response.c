@@ -142,22 +142,22 @@ ret_t http_response_parse_line(http_response_t* response, const char* buffer) {
   key = response->line_buffer;
   value = strchr(key, ':');
 
-  if(strncmp(key, "HTTP/", 5) == 0) {
+  if (strncmp(key, "HTTP/", 5) == 0) {
     char* p = strchr(key, ' ');
-    if(p != NULL) {
-      while(*p && *p == ' ') p++;
+    if (p != NULL) {
+      while (*p && *p == ' ') p++;
       http_response_set_status_code(response, tk_atoi(p));
     }
-  } else if(value != NULL) {
+  } else if (value != NULL) {
     char* end = NULL;
     *value++ = '\0';
-    while(*value && *value == ' ') value++;
+    while (*value && *value == ' ') value++;
 
     end = strchr(value, '\r');
-    if(end == NULL) {
+    if (end == NULL) {
       end = strchr(value, '\n');
     }
-    if(end != NULL) {
+    if (end != NULL) {
       *end = '\0';
     }
 
@@ -166,4 +166,3 @@ ret_t http_response_parse_line(http_response_t* response, const char* buffer) {
 
   return RET_OK;
 }
-

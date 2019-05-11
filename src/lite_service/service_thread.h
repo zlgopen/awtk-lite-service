@@ -57,6 +57,9 @@ tk_thread_t* service_thread_start(const lite_service_vtable_t* vt, void* init_da
 ret_t service_thread_request(tk_thread_t* service, uint32_t cmd, uint32_t data_size,
                              const void* data);
 
+/*for tester injection*/
+ret_t service_thread_set_idle_queue(tk_thread_t* thread, lite_service_idle_queue_t idle_queue);
+
 END_C_DECLS
 
 #endif /*TK_SERVICE_THREAD_H*/

@@ -57,3 +57,10 @@ ret_t service_thread_request(tk_thread_t* thread, uint32_t cmd, uint32_t data_si
 
   return lite_service_request(service, cmd, data_size, data);
 }
+
+ret_t service_thread_set_idle_queue(tk_thread_t* thread, lite_service_idle_queue_t idle_queue) {
+  lite_service_t* service = tk_thread_get_args(thread);
+  return_value_if_fail(service != NULL, RET_BAD_PARAMS);
+
+  return lite_service_set_idle_queue(service, idle_queue);
+}

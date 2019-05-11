@@ -61,7 +61,6 @@ TEST(LiteService, thread) {
   ASSERT_EQ(service_thread_request(t, 0, 4, "bcd"), RET_OK);
 
   tk_thread_join(t);
-  tk_thread_destroy(t);
 
   ASSERT_STREQ(s_log.c_str(), "1234 4 abc1235 4 bcd0 4 bcd");
 }
