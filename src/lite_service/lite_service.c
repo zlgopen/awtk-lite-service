@@ -142,7 +142,9 @@ ret_t lite_service_destroy(lite_service_t* service) {
     tk_thread_destroy(service->thread);
   }
 
-  request_queue_destroy(service->queue);
+  if (service->queue != NULL) {
+    request_queue_destroy(service->queue);
+  }
   memset(service, 0x00, service->vt->size);
 
   TKMEM_FREE(service);

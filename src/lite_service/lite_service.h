@@ -150,7 +150,6 @@ ret_t lite_service_dispatch(lite_service_t* service, event_t* event, uint32_t ev
  */
 ret_t lite_service_destroy(lite_service_t* service);
 
-
 /*for tester injection*/
 ret_t lite_service_set_idle_queue(lite_service_t* service, lite_service_idle_queue_t idle_queue);
 

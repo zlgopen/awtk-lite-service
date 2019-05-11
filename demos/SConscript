@@ -4,7 +4,9 @@ import sys
 env=DefaultEnvironment().Clone()
 BIN_DIR=os.environ['BIN_DIR'];
 
-env['LIBS'] = ['lite_service', 'http', 'curl'] + env['LIBS']
+env['LIBS'] = ['lite_service', 'http', 'async', 'curl'] + env['LIBS']
+
 env.Program(os.path.join(BIN_DIR, 'demo_http'), ['demo_http.c'])
+env.Program(os.path.join(BIN_DIR, 'demo_async'), ['demo_async.c'])
 
 
