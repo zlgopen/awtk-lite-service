@@ -1,7 +1,7 @@
 ## async\_t
 ### 概述
-
  异步请求。
+
 
 
 
@@ -11,14 +11,13 @@
 
 | 函数名称 | 说明 | 
 | -------- | ------------ | 
-| <a href="#async_t_async_call">async\_call</a> |  |
+| <a href="#async_t_async_call">async\_call</a> | 异步执行exec函数，执行完成后，在GUI线程调用on_result函数。 |
 #### async\_call 函数
 -----------------------
 
 * 函数功能：
 
-> <p id="async_t_async_call"> 
- 异步执行exec函数，执行完成后，在GUI线程调用on_result函数。
+> <p id="async_t_async_call"> 异步执行exec函数，执行完成后，在GUI线程调用on_result函数。
 
 
 

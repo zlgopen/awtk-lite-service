@@ -31,15 +31,14 @@ typedef ret_t (*async_on_result_t)(void* ctx, ret_t result);
 
 /**
  * @class async_t
- *
  * 异步请求。
+ *
  * @annotation ["fake"]
  *
  */
 
 /**
  * @method async_call
- * 
  * 异步执行exec函数，执行完成后，在GUI线程调用on_result函数。
  *
  * @annotation ["static"]
