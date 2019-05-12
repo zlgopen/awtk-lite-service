@@ -112,7 +112,7 @@ async_call(do_sth_take_time, on_do_sth_take_time_done, widget);
 
 **接受事件的回调函数的原型：**
 
-``
+```
 typedef ret_t (*http_request_on_event_t)(void* ctx, http_request_t* request, http_response_t* resp);
 ```
 
