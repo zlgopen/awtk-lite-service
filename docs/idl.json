@@ -87,7 +87,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建一个key/value对象。\n\n\n\n",
+        "desc": " 创建一个key/value对象。\n\n\n\n",
         "name": "http_header_create",
         "return": {
           "type": "http_header_t",
@@ -108,7 +108,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建一个key/value对象，并把next指向header。\n\n\n\n",
+        "desc": " 创建一个key/value对象，并把next指向header。\n\n\n\n",
         "name": "http_header_prepend",
         "return": {
           "type": "http_header_t",
@@ -129,7 +129,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 查找指定的key，如果找到返回它的value。\n\n\n\n",
+        "desc": " 查找指定的key，如果找到返回它的value。\n\n\n\n",
         "name": "http_header_find",
         "return": {
           "type": "const char*",
@@ -145,7 +145,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 销毁header(包括后继节点)。\n\n\n\n",
+        "desc": " 销毁header(包括后继节点)。\n\n\n\n",
         "name": "http_header_destroy",
         "return": {
           "type": "ret_t",
@@ -207,7 +207,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建一个GET请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "desc": " 创建一个GET请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
         "name": "http_request_create_get",
         "return": {
           "type": "http_request_t*",
@@ -233,7 +233,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建一个DELETE请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "desc": " 创建一个DELETE请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
         "name": "http_request_create_delete",
         "return": {
           "type": "http_request_t*",
@@ -274,7 +274,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建一个PUT请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "desc": " 创建一个PUT请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
         "name": "http_request_create_put",
         "return": {
           "type": "http_request_t*",
@@ -315,7 +315,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建一个POST请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "desc": " 创建一个POST请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
         "name": "http_request_create_post",
         "return": {
           "type": "http_request_t*",
@@ -341,7 +341,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 增加一个header。\n\n\n\n",
+        "desc": " 增加一个header。\n\n\n\n",
         "name": "http_request_add_header",
         "return": {
           "type": "ret_t",
@@ -357,7 +357,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 设置abort标志，通知服务取消本次请求。\n\n\n\n",
+        "desc": " 设置abort标志，通知服务取消本次请求。\n\n\n\n",
         "name": "http_request_abort",
         "return": {
           "type": "ret_t",
@@ -373,7 +373,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 销毁request对象。\n\n\n\n",
+        "desc": " 销毁request对象。\n\n\n\n",
         "name": "http_request_destroy",
         "return": {
           "type": "ret_t",
@@ -451,7 +451,7 @@
       {
         "params": [],
         "annotation": {},
-        "desc": "\n 创建一个response对象。\n\n\n",
+        "desc": " 创建一个response对象。\n\n\n",
         "name": "http_response_create",
         "return": {
           "type": "http_response_t*",
@@ -472,7 +472,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 设置status。\n\n\n\n",
+        "desc": " 设置status。\n\n\n\n",
         "name": "http_response_set_status_code",
         "return": {
           "type": "ret_t",
@@ -498,7 +498,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 增加一个header。\n\n\n\n",
+        "desc": " 增加一个header。\n\n\n\n",
         "name": "http_response_add_header",
         "return": {
           "type": "ret_t",
@@ -519,7 +519,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 查找指定的key，如果找到返回它的value。\n\n\n\n",
+        "desc": " 查找指定的key，如果找到返回它的value。\n\n\n\n",
         "name": "http_response_find_header",
         "return": {
           "type": "const char*",
@@ -545,7 +545,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 追加下载的数据。\n\n\n\n",
+        "desc": " 追加下载的数据。\n\n\n\n",
         "name": "http_response_append_body_data",
         "return": {
           "type": "ret_t",
@@ -566,7 +566,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 设置完成标志。\n\n\n\n",
+        "desc": " 设置完成标志。\n\n\n\n",
         "name": "http_response_set_done",
         "return": {
           "type": "ret_t",
@@ -587,7 +587,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 设置失败标志。\n\n\n\n",
+        "desc": " 设置失败标志。\n\n\n\n",
         "name": "http_response_set_fail",
         "return": {
           "type": "ret_t",
@@ -608,7 +608,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 更新已经上传数据的大小。\n\n\n\n",
+        "desc": " 更新已经上传数据的大小。\n\n\n\n",
         "name": "http_response_set_uploaded_size",
         "return": {
           "type": "ret_t",
@@ -629,7 +629,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 解析一行数据。\n\n\n\n",
+        "desc": " 解析一行数据。\n\n\n\n",
         "name": "http_response_parse_line",
         "return": {
           "type": "ret_t",
@@ -645,7 +645,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n lock response对象。\n\n\n\n",
+        "desc": " 锁定response对象。\n\n 在request的on_event回调函数访问response的属性无需锁定。\n\n\n\n",
         "name": "http_response_lock",
         "return": {
           "type": "ret_t",
@@ -661,7 +661,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n lock response对象。\n\n\n\n",
+        "desc": " 解锁response对象。\n\n 在request的on_event回调函数访问response的属性无需锁定。\n\n\n\n",
         "name": "http_response_unlock",
         "return": {
           "type": "ret_t",
@@ -677,7 +677,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 销毁response对象。\n\n\n\n",
+        "desc": " 销毁response对象。\n\n\n\n",
         "name": "http_response_destroy",
         "return": {
           "type": "ret_t",

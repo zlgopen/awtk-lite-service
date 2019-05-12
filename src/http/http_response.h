@@ -94,7 +94,6 @@ struct _http_response_t {
 
 /**
  * @method http_response_create
- *
  * 创建一个response对象。
  *
  * @return {http_response_t*} 返回response对象。
@@ -103,7 +102,6 @@ http_response_t* http_response_create(void);
 
 /**
  * @method http_response_set_status_code
- *
  * 设置status。
  *
  * @param {http_response_t*} response http response对象。
@@ -115,7 +113,6 @@ ret_t http_response_set_status_code(http_response_t* response, uint32_t code);
 
 /**
  * @method http_response_add_header
- *
  * 增加一个header。
  *
  * @param {http_response_t*} response http response对象。
@@ -128,7 +125,6 @@ ret_t http_response_add_header(http_response_t* response, const char* key, const
 
 /**
  * @method http_response_find_header
- *
  * 查找指定的key，如果找到返回它的value。
  *
  * @param {http_response_t*} response response对象。
@@ -140,7 +136,6 @@ const char* http_response_find(http_response_t* response, const char* key);
 
 /**
  * @method http_response_append_body_data
- *
  * 追加下载的数据。
  *
  * @param {http_response_t*} response http response对象。
@@ -154,7 +149,6 @@ ret_t http_response_append_body_data(http_response_t* response, const void* data
 
 /**
  * @method http_response_set_done
- *
  * 设置完成标志。
  *
  * @param {http_response_t*} response http response对象。
@@ -166,7 +160,6 @@ ret_t http_response_set_done(http_response_t* response, bool_t done);
 
 /**
  * @method http_response_set_fail
- *
  * 设置失败标志。
  *
  * @param {http_response_t*} response http response对象。
@@ -178,7 +171,6 @@ ret_t http_response_set_fail(http_response_t* response, bool_t fail);
 
 /**
  * @method http_response_set_uploaded_size
- *
  * 更新已经上传数据的大小。
  *
  * @param {http_response_t*} response http response对象。
@@ -190,7 +182,6 @@ ret_t http_response_set_uploaded_size(http_response_t* response, uint32_t upload
 
 /**
  * @method http_response_parse_line
- *
  * 解析一行数据。
  *
  * @param {http_response_t*} response http response对象。
@@ -202,8 +193,9 @@ ret_t http_response_parse_line(http_response_t* response, const char* buffer);
 
 /**
  * @method http_response_lock
+ * 锁定response对象。
  *
- * lock response对象。
+ * 在request的on_event回调函数访问response的属性无需锁定。
  *
  * @param {http_response_t*} response http response对象。
  *
@@ -213,8 +205,9 @@ ret_t http_response_lock(http_response_t* response);
 
 /**
  * @method http_response_unlock
+ * 解锁response对象。
  *
- * lock response对象。
+ * 在request的on_event回调函数访问response的属性无需锁定。
  *
  * @param {http_response_t*} response http response对象。
  *
@@ -224,7 +217,6 @@ ret_t http_response_unlock(http_response_t* response);
 
 /**
  * @method http_response_destroy
- *
  * 销毁response对象。
  *
  * @param {http_response_t*} response http response对象。

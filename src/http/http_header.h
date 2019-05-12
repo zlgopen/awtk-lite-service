@@ -57,7 +57,6 @@ struct _http_header_t {
 
 /**
  * @method http_header_create
- *
  * 创建一个key/value对象。
  *
  * @param {const char*} key 键名。
@@ -69,7 +68,6 @@ http_header_t* http_header_create(const char* key, const char* value);
 
 /**
  * @method http_header_prepend
- *
  * 创建一个key/value对象，并把next指向header。
  *
  * @param {const char*} key 键名。
@@ -81,7 +79,6 @@ http_header_t* http_header_prepend(http_header_t* header, const char* key, const
 
 /**
  * @method http_header_find
- *
  * 查找指定的key，如果找到返回它的value。
  *
  * @param {http_header_t*} header header对象。
@@ -93,7 +90,6 @@ const char* http_header_find(http_header_t* header, const char* key);
 
 /**
  * @method http_header_destroy
- *
  * 销毁header(包括后继节点)。
  *
  * @param {http_header_t*} header header对象。

@@ -11,13 +11,13 @@
 
 | 函数名称 | 说明 | 
 | -------- | ------------ | 
-| <a href="#http_request_t_http_request_abort">http\_request\_abort</a> |  |
-| <a href="#http_request_t_http_request_add_header">http\_request\_add\_header</a> |  |
-| <a href="#http_request_t_http_request_create_delete">http\_request\_create\_delete</a> |  |
-| <a href="#http_request_t_http_request_create_get">http\_request\_create\_get</a> |  |
-| <a href="#http_request_t_http_request_create_post">http\_request\_create\_post</a> |  |
-| <a href="#http_request_t_http_request_create_put">http\_request\_create\_put</a> |  |
-| <a href="#http_request_t_http_request_destroy">http\_request\_destroy</a> |  |
+| <a href="#http_request_t_http_request_abort">http\_request\_abort</a> | 设置abort标志，通知服务取消本次请求。 |
+| <a href="#http_request_t_http_request_add_header">http\_request\_add\_header</a> | 增加一个header。 |
+| <a href="#http_request_t_http_request_create_delete">http\_request\_create\_delete</a> | 创建一个DELETE请求。 |
+| <a href="#http_request_t_http_request_create_get">http\_request\_create\_get</a> | 创建一个GET请求。 |
+| <a href="#http_request_t_http_request_create_post">http\_request\_create\_post</a> | 创建一个POST请求。 |
+| <a href="#http_request_t_http_request_create_put">http\_request\_create\_put</a> | 创建一个PUT请求。 |
+| <a href="#http_request_t_http_request_destroy">http\_request\_destroy</a> | 销毁request对象。 |
 ### 属性
 <p id="http_request_t_properties">
 
@@ -35,8 +35,7 @@
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_abort">
- 设置abort标志，通知服务取消本次请求。
+> <p id="http_request_t_http_request_abort"> 设置abort标志，通知服务取消本次请求。
 
 
 
@@ -59,8 +58,7 @@ ret_t http_request_abort (http_request_t* request);
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_add_header">
- 增加一个header。
+> <p id="http_request_t_http_request_add_header"> 增加一个header。
 
 
 
@@ -85,8 +83,7 @@ ret_t http_request_add_header (http_request_t* request, const char* key, const c
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_create_delete">
- 创建一个DELETE请求。
+> <p id="http_request_t_http_request_create_delete"> 创建一个DELETE请求。
 
  回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
 
@@ -113,8 +110,7 @@ http_request_t* http_request_create_delete (const char* url, http_request_on_eve
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_create_get">
- 创建一个GET请求。
+> <p id="http_request_t_http_request_create_get"> 创建一个GET请求。
 
  回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
 
@@ -141,8 +137,7 @@ http_request_t* http_request_create_get (const char* url, http_request_on_event_
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_create_post">
- 创建一个POST请求。
+> <p id="http_request_t_http_request_create_post"> 创建一个POST请求。
 
  回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
 
@@ -172,8 +167,7 @@ http_request_t* http_request_create_post (const char* url, http_request_on_event
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_create_put">
- 创建一个PUT请求。
+> <p id="http_request_t_http_request_create_put"> 创建一个PUT请求。
 
  回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
 
@@ -203,8 +197,7 @@ http_request_t* http_request_create_put (const char* url, http_request_on_event_
 
 * 函数功能：
 
-> <p id="http_request_t_http_request_destroy">
- 销毁request对象。
+> <p id="http_request_t_http_request_destroy"> 销毁request对象。
 
 
 

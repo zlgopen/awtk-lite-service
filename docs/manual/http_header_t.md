@@ -11,10 +11,10 @@
 
 | 函数名称 | 说明 | 
 | -------- | ------------ | 
-| <a href="#http_header_t_http_header_create">http\_header\_create</a> |  |
-| <a href="#http_header_t_http_header_destroy">http\_header\_destroy</a> |  |
-| <a href="#http_header_t_http_header_find">http\_header\_find</a> |  |
-| <a href="#http_header_t_http_header_prepend">http\_header\_prepend</a> |  |
+| <a href="#http_header_t_http_header_create">http\_header\_create</a> | 创建一个key/value对象。 |
+| <a href="#http_header_t_http_header_destroy">http\_header\_destroy</a> | 销毁header(包括后继节点)。 |
+| <a href="#http_header_t_http_header_find">http\_header\_find</a> | 查找指定的key，如果找到返回它的value。 |
+| <a href="#http_header_t_http_header_prepend">http\_header\_prepend</a> | 创建一个key/value对象，并把next指向header。 |
 ### 属性
 <p id="http_header_t_properties">
 
@@ -28,8 +28,7 @@
 
 * 函数功能：
 
-> <p id="http_header_t_http_header_create">
- 创建一个key/value对象。
+> <p id="http_header_t_http_header_create"> 创建一个key/value对象。
 
 
 
@@ -53,8 +52,7 @@ http_header_t http_header_create (const char* key, const char* value);
 
 * 函数功能：
 
-> <p id="http_header_t_http_header_destroy">
- 销毁header(包括后继节点)。
+> <p id="http_header_t_http_header_destroy"> 销毁header(包括后继节点)。
 
 
 
@@ -77,8 +75,7 @@ ret_t http_header_destroy (http_header_t* header);
 
 * 函数功能：
 
-> <p id="http_header_t_http_header_find">
- 查找指定的key，如果找到返回它的value。
+> <p id="http_header_t_http_header_find"> 查找指定的key，如果找到返回它的value。
 
 
 
@@ -102,8 +99,7 @@ const char* http_header_find (http_header_t* header, const char* key);
 
 * 函数功能：
 
-> <p id="http_header_t_http_header_prepend">
- 创建一个key/value对象，并把next指向header。
+> <p id="http_header_t_http_header_prepend"> 创建一个key/value对象，并把next指向header。
 
 
 

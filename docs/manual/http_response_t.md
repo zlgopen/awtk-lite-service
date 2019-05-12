@@ -13,18 +13,18 @@
 
 | 函数名称 | 说明 | 
 | -------- | ------------ | 
-| <a href="#http_response_t_http_response_add_header">http\_response\_add\_header</a> |  |
-| <a href="#http_response_t_http_response_append_body_data">http\_response\_append\_body\_data</a> |  |
-| <a href="#http_response_t_http_response_create">http\_response\_create</a> |  |
-| <a href="#http_response_t_http_response_destroy">http\_response\_destroy</a> |  |
-| <a href="#http_response_t_http_response_find_header">http\_response\_find\_header</a> |  |
-| <a href="#http_response_t_http_response_lock">http\_response\_lock</a> |  |
-| <a href="#http_response_t_http_response_parse_line">http\_response\_parse\_line</a> |  |
-| <a href="#http_response_t_http_response_set_done">http\_response\_set\_done</a> |  |
-| <a href="#http_response_t_http_response_set_fail">http\_response\_set\_fail</a> |  |
-| <a href="#http_response_t_http_response_set_status_code">http\_response\_set\_status\_code</a> |  |
-| <a href="#http_response_t_http_response_set_uploaded_size">http\_response\_set\_uploaded\_size</a> |  |
-| <a href="#http_response_t_http_response_unlock">http\_response\_unlock</a> |  |
+| <a href="#http_response_t_http_response_add_header">http\_response\_add\_header</a> | 增加一个header。 |
+| <a href="#http_response_t_http_response_append_body_data">http\_response\_append\_body\_data</a> | 追加下载的数据。 |
+| <a href="#http_response_t_http_response_create">http\_response\_create</a> | 创建一个response对象。 |
+| <a href="#http_response_t_http_response_destroy">http\_response\_destroy</a> | 销毁response对象。 |
+| <a href="#http_response_t_http_response_find_header">http\_response\_find\_header</a> | 查找指定的key，如果找到返回它的value。 |
+| <a href="#http_response_t_http_response_lock">http\_response\_lock</a> | 锁定response对象。 |
+| <a href="#http_response_t_http_response_parse_line">http\_response\_parse\_line</a> | 解析一行数据。 |
+| <a href="#http_response_t_http_response_set_done">http\_response\_set\_done</a> | 设置完成标志。 |
+| <a href="#http_response_t_http_response_set_fail">http\_response\_set\_fail</a> | 设置失败标志。 |
+| <a href="#http_response_t_http_response_set_status_code">http\_response\_set\_status\_code</a> | 设置status。 |
+| <a href="#http_response_t_http_response_set_uploaded_size">http\_response\_set\_uploaded\_size</a> | 更新已经上传数据的大小。 |
+| <a href="#http_response_t_http_response_unlock">http\_response\_unlock</a> | 解锁response对象。 |
 ### 属性
 <p id="http_response_t_properties">
 
@@ -42,8 +42,7 @@
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_add_header">
- 增加一个header。
+> <p id="http_response_t_http_response_add_header"> 增加一个header。
 
 
 
@@ -68,8 +67,7 @@ ret_t http_response_add_header (http_response_t* response, const char* key, cons
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_append_body_data">
- 追加下载的数据。
+> <p id="http_response_t_http_response_append_body_data"> 追加下载的数据。
 
 
 
@@ -94,8 +92,7 @@ ret_t http_response_append_body_data (http_response_t* response, const void* bod
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_create">
- 创建一个response对象。
+> <p id="http_response_t_http_response_create"> 创建一个response对象。
 
 
 
@@ -116,8 +113,7 @@ http_response_t* http_response_create ();
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_destroy">
- 销毁response对象。
+> <p id="http_response_t_http_response_destroy"> 销毁response对象。
 
 
 
@@ -140,8 +136,7 @@ ret_t http_response_destroy (http_response_t* response);
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_find_header">
- 查找指定的key，如果找到返回它的value。
+> <p id="http_response_t_http_response_find_header"> 查找指定的key，如果找到返回它的value。
 
 
 
@@ -165,8 +160,9 @@ const char* http_response_find_header (http_response_t* response, const char* ke
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_lock">
- lock response对象。
+> <p id="http_response_t_http_response_lock"> 锁定response对象。
+
+ 在request的on_event回调函数访问response的属性无需锁定。
 
 
 
@@ -189,8 +185,7 @@ ret_t http_response_lock (http_response_t* response);
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_parse_line">
- 解析一行数据。
+> <p id="http_response_t_http_response_parse_line"> 解析一行数据。
 
 
 
@@ -214,8 +209,7 @@ ret_t http_response_parse_line (http_response_t* response, const char* buffer);
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_set_done">
- 设置完成标志。
+> <p id="http_response_t_http_response_set_done"> 设置完成标志。
 
 
 
@@ -239,8 +233,7 @@ ret_t http_response_set_done (http_response_t* response, bool_t done);
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_set_fail">
- 设置失败标志。
+> <p id="http_response_t_http_response_set_fail"> 设置失败标志。
 
 
 
@@ -264,8 +257,7 @@ ret_t http_response_set_fail (http_response_t* response, bool_t fail);
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_set_status_code">
- 设置status。
+> <p id="http_response_t_http_response_set_status_code"> 设置status。
 
 
 
@@ -289,8 +281,7 @@ ret_t http_response_set_status_code (http_response_t* response, uint32_t code);
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_set_uploaded_size">
- 更新已经上传数据的大小。
+> <p id="http_response_t_http_response_set_uploaded_size"> 更新已经上传数据的大小。
 
 
 
@@ -314,8 +305,9 @@ ret_t http_response_set_uploaded_size (http_response_t* response, uint32_t uploa
 
 * 函数功能：
 
-> <p id="http_response_t_http_response_unlock">
- lock response对象。
+> <p id="http_response_t_http_response_unlock"> 解锁response对象。
+
+ 在request的on_event回调函数访问response的属性无需锁定。
 
 
 

@@ -91,7 +91,6 @@ struct _http_request_t {
 
 /**
  * @method http_request_create_get
- *
  * 创建一个GET请求。
  *
  * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
@@ -107,7 +106,6 @@ http_request_t* http_request_create_get(const char* url, http_request_on_event_t
 
 /**
  * @method http_request_create_delete
- *
  * 创建一个DELETE请求。
  *
  * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
@@ -123,7 +121,6 @@ http_request_t* http_request_create_delete(const char* url, http_request_on_even
 
 /**
  * @method http_request_create_put
- *
  * 创建一个PUT请求。
  *
  * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
@@ -143,7 +140,6 @@ http_request_t* http_request_create_put(const char* url, http_request_on_event_t
 
 /**
  * @method http_request_create_post
- *
  * 创建一个POST请求。
  *
  * 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。
@@ -163,7 +159,6 @@ http_request_t* http_request_create_post(const char* url, http_request_on_event_
 
 /**
  * @method http_request_add_header
- *
  * 增加一个header。
  *
  * @param {http_request_t*} request http request对象。
@@ -176,7 +171,6 @@ ret_t http_request_add_header(http_request_t* request, const char* key, const ch
 
 /**
  * @method http_request_abort
- *
  * 设置abort标志，通知服务取消本次请求。
  *
  * @param {http_request_t*} request http request对象。
@@ -187,7 +181,6 @@ ret_t http_request_abort(http_request_t* request);
 
 /**
  * @method http_request_destroy
- *
  * 销毁request对象。
  *
  * @param {http_request_t*} request http request对象。
