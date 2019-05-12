@@ -77,7 +77,6 @@ struct _lite_service_t {
 
 /**
  * @method lite_service_create
- *
  * 创建lite service对象。
  *
  * @param {lite_service_vtable_t*} vt lite_service虚表。
@@ -89,7 +88,6 @@ lite_service_t* lite_service_create(const lite_service_vtable_t* vt, void* init_
 
 /**
  * @method lite_service_run
- *
  * 运行服务(由服务线程调用)。
  *
  * @param {lite_service_t*} service lite_service对象。
@@ -100,7 +98,6 @@ ret_t lite_service_run(lite_service_t* service);
 
 /**
  * @method lite_service_set_on_event
- *
  * 注册服务的事件。事件处理函数自动放到GUI线程执行。
  *
  * @param {lite_service_t*} service lite_service对象。
@@ -113,7 +110,6 @@ uint32_t lite_service_set_on_event(lite_service_t* service, event_func_t on_even
 
 /**
  * @method lite_service_request
- *
  * 请求服务。
  *
  * @param {lite_service_t*} service lite_service对象。
@@ -128,7 +124,6 @@ ret_t lite_service_request(lite_service_t* service, uint32_t cmd, uint32_t data_
 
 /**
  * @method lite_service_dispatch
- *
  * 分发事件(放在UI的idle中执行)。
  *
  * @param {lite_service_t*} service lite_service对象。
@@ -141,7 +136,6 @@ ret_t lite_service_dispatch(lite_service_t* service, event_t* event, uint32_t ev
 
 /**
  * @method lite_service_destroy
- *
  * 销毁服务。
  *
  * @param {lite_service_t*} service lite_service对象。

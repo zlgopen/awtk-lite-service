@@ -52,7 +52,6 @@ typedef struct _request_queue_t {
 
 /**
  * @method request_queue_create
- *
  * 创建request queue对象。
  *
  * @param {uint32_t} size Buffer的大小。
@@ -67,7 +66,6 @@ request_queue_t* request_queue_create(uint32_t size, uint32_t max_payload_size,
 
 /**
  * @method request_queue_send
- *
  * 发送一个请求。
  *
  * @param {request_queue_t*} q request_queue对象。
@@ -82,7 +80,6 @@ ret_t request_queue_send(request_queue_t* q, uint32_t cmd, uint32_t payload_size
 
 /**
  * @method request_queue_process
- *
  * 处理队列中的请求(由服务线程调用)。
  *
  * @param {request_queue_t*} q request_queue对象。
@@ -94,7 +91,6 @@ ret_t request_queue_process(request_queue_t* q, uint32_t max_requests);
 
 /**
  * @method request_queue_destroy
- *
  * 销毁队列。
  *
  * @param {request_queue_t*} q request_queue对象。

@@ -28,8 +28,15 @@
 BEGIN_C_DECLS
 
 /**
- * @method service_thread_start
+ * @class service_thread_t
+ * 服务线程。
  *
+ * @annotation ["fake"]
+ *
+ */
+
+/**
+ * @method service_thread_start
  * 启动服务线程。
  *
  * @param {const lite_service_vtable_t*} vt lite_service vtable对象。
@@ -44,7 +51,6 @@ tk_thread_t* service_thread_start(const lite_service_vtable_t* vt, void* init_da
 
 /**
  * @method service_thread_request
- *
  * 请求服务。
  *
  * @param {tk_thread_t*} service service thread对象。

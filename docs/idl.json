@@ -816,7 +816,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建lite service对象。\n\n\n\n",
+        "desc": " 创建lite service对象。\n\n\n\n",
         "name": "lite_service_create",
         "return": {
           "type": "lite_service_t*",
@@ -832,7 +832,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 运行服务(由服务线程调用)。\n\n\n\n",
+        "desc": " 运行服务(由服务线程调用)。\n\n\n\n",
         "name": "lite_service_run",
         "return": {
           "type": "ret_t",
@@ -858,7 +858,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 注册服务的事件。事件处理函数自动放到GUI线程执行。\n\n\n\n",
+        "desc": " 注册服务的事件。事件处理函数自动放到GUI线程执行。\n\n\n\n",
         "name": "lite_service_set_on_event",
         "return": {
           "type": "uint32_t",
@@ -889,7 +889,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 请求服务。\n\n\n\n",
+        "desc": " 请求服务。\n\n\n\n",
         "name": "lite_service_request",
         "return": {
           "type": "ret_t",
@@ -915,7 +915,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 分发事件(放在UI的idle中执行)。\n\n\n\n",
+        "desc": " 分发事件(放在UI的idle中执行)。\n\n\n\n",
         "name": "lite_service_dispatch",
         "return": {
           "type": "ret_t",
@@ -931,7 +931,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 销毁服务。\n\n\n\n",
+        "desc": " 销毁服务。\n\n\n\n",
         "name": "lite_service_destroy",
         "return": {
           "type": "ret_t",
@@ -973,7 +973,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 创建request queue对象。\n\n\n\n",
+        "desc": " 创建request queue对象。\n\n\n\n",
         "name": "request_queue_create",
         "return": {
           "type": "request_queue_t*",
@@ -1004,7 +1004,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 发送一个请求。\n\n\n\n",
+        "desc": " 发送一个请求。\n\n\n\n",
         "name": "request_queue_send",
         "return": {
           "type": "ret_t",
@@ -1025,7 +1025,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 处理队列中的请求(由服务线程调用)。\n\n\n\n",
+        "desc": " 处理队列中的请求(由服务线程调用)。\n\n\n\n",
         "name": "request_queue_process",
         "return": {
           "type": "ret_t",
@@ -1041,13 +1041,24 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 销毁队列。\n\n\n\n",
+        "desc": " 销毁队列。\n\n\n\n",
         "name": "request_queue_destroy",
         "return": {
           "type": "ret_t",
           "desc": "返回RET_OK表示成功，否则表示失败。"
         }
-      },
+      }
+    ],
+    "events": [],
+    "properties": [],
+    "header": "lite_service/request_queue.h",
+    "desc": "\n 请求队列。\n\n\n",
+    "name": "request_queue_t",
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
       {
         "params": [
           {
@@ -1072,7 +1083,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 启动服务线程。\n\n\n\n",
+        "desc": " 启动服务线程。\n\n\n\n",
         "name": "service_thread_start",
         "return": {
           "type": "ret_t",
@@ -1103,7 +1114,7 @@
           }
         ],
         "annotation": {},
-        "desc": "\n 请求服务。\n\n\n\n",
+        "desc": " 请求服务。\n\n\n\n",
         "name": "service_thread_request",
         "return": {
           "type": "ret_t",
@@ -1113,9 +1124,12 @@
     ],
     "events": [],
     "properties": [],
-    "header": "lite_service/request_queue.h",
-    "desc": "\n 请求队列。\n\n\n",
-    "name": "request_queue_t",
+    "header": "lite_service/service_thread.h",
+    "desc": " 服务线程。\n\n\n\n",
+    "name": "service_thread_t",
+    "annotation": {
+      "fake": true
+    },
     "level": 1
   }
 ]
