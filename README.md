@@ -146,3 +146,8 @@ ret_t http_request(http_request_t* request);
 ## 五、媒体播放
 
 基于ffmpeg实现媒体播放功能(TODO)
+
+## 六、API文档
+
+[API文档](docs/manual)
+
