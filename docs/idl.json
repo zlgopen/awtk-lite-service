@@ -761,7 +761,7 @@
           }
         ],
         "annotation": {},
-        "desc": " 启动一个lite service线程处理HTTP请求，在处理过程会把事件通过request->on_event通知调用者。\n\n * request->on_event在UI线程中执行，所以在该函数中可以操作GUI的控件。\n\n * request只能在request->response的fail标志或done标志为TRUE后才能销毁。\n\n * 可以通过http_request_abort取消请求，取消请求异步执行，可能会有一定延迟。\n\n * 本函数适合一般的REST API，不适合传输大文件，也不适合同时发送大量请求。\n\n\n\n\n",
+        "desc": " 启动一个lite service线程处理HTTP请求，在处理过程会把事件通过request->on_event通知调用者。\n\n注意：\n\n> * request->on_event在UI线程中执行，所以在该函数中可以操作GUI的控件。\n> * request只能在request->response的fail标志或done标志为TRUE后才能销毁。\n> * 可以通过http_request_abort取消请求，取消请求异步执行，可能会有一定延迟。\n> * 本函数适合一般的REST API，不适合传输大文件，也不适合同时发送大量请求。\n\n\n\n\n",
         "name": "http_request",
         "return": {
           "type": "ret_t",
