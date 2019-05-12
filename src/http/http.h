@@ -28,8 +28,15 @@
 BEGIN_C_DECLS
 
 /**
- * @method http_request
+ * @class http_t
  *
+ * HTTP请求。
+ * @annotation ["fake"]
+ *
+ */
+
+/**
+ * @method http_request
  * 启动一个lite service线程处理HTTP请求，在处理过程会把事件通过request->on_event通知调用者。
  *
  * request->on_event在UI线程中执行，所以在该函数中可以操作GUI的控件。
@@ -49,8 +56,7 @@ ret_t http_request(http_request_t* request);
 
 /**
  * @method http_init
- *
- * 全局初始化。
+ * 全局初始化，在应用程序初始化时调用。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  *
@@ -59,8 +65,7 @@ ret_t http_init(void);
 
 /**
  * @method http_deinit
- *
- * 全局~初始化。
+ * 全局~初始化，在应用程序结束时调用。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  *

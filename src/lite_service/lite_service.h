@@ -58,7 +58,7 @@ struct _lite_service_vtable_t {
 /**
  * @class lite_service_t
  *
- * 服务接口。
+ * 服务基类。
  *
  */
 struct _lite_service_t {

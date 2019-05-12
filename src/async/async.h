@@ -30,7 +30,19 @@ typedef ret_t (*async_exec_t)(void* ctx);
 typedef ret_t (*async_on_result_t)(void* ctx, ret_t result);
 
 /**
+ * @class async_t
+ *
+ * 异步请求。
+ * @annotation ["fake"]
+ *
+ */
+
+/**
  * @method async_call
+ * 
+ * 异步执行exec函数，执行完成后，在GUI线程调用on_result函数。
+ *
+ * @annotation ["static"]
  *
  * @param {async_exec_t} exec 需要异步支持的函数。
  * @param {async_on_result_t} on_result 返回执行结果(可选)

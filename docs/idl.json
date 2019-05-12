@@ -1,0 +1,1121 @@
+[
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "async_exec_t",
+            "name": "exec",
+            "desc": "需要异步支持的函数。"
+          },
+          {
+            "type": "async_on_result_t",
+            "name": "on_result",
+            "desc": "返回执行结果(可选)"
+          },
+          {
+            "type": "void*",
+            "name": "ctx",
+            "desc": "两个回调函数的上下文。"
+          }
+        ],
+        "annotation": {
+          "static": true
+        },
+        "desc": " \n 异步执行exec函数，执行完成后，在GUI线程调用on_result函数。\n\n\n\n\n\n",
+        "name": "async_call",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [],
+    "header": "async/async.h",
+    "desc": "\n 异步请求。\n\n\n",
+    "name": "async_t",
+    "annotation": {
+      "fake": true
+    },
+    "level": 1
+  },
+  {
+    "type": "enum",
+    "desc": " HTPP METHOD。\n\n",
+    "consts": [
+      {
+        "desc": " GET请求。\n\n",
+        "name": "HTTP_METHOD_GET"
+      },
+      {
+        "desc": " PUT请求。\n\n",
+        "name": "HTTP_METHOD_PUT"
+      },
+      {
+        "desc": " POST请求。\n\n",
+        "name": "HTTP_METHOD_POST"
+      },
+      {
+        "desc": " DELETE请求。\n\n",
+        "name": "HTTP_METHOD_DELETE"
+      }
+    ],
+    "header": "http/http_common.h",
+    "name": "http_method_t",
+    "prefix": "HTTP_METHOD_",
+    "annotation": {
+      "string": true
+    },
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "const char*",
+            "name": "key",
+            "desc": "键名。"
+          },
+          {
+            "type": "const char*",
+            "name": "value",
+            "desc": "键值。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建一个key/value对象。\n\n\n\n",
+        "name": "http_header_create",
+        "return": {
+          "type": "http_header_t",
+          "desc": "返回header对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "const char*",
+            "name": "key",
+            "desc": "键名。"
+          },
+          {
+            "type": "const char*",
+            "name": "value",
+            "desc": "键值。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建一个key/value对象，并把next指向header。\n\n\n\n",
+        "name": "http_header_prepend",
+        "return": {
+          "type": "http_header_t",
+          "desc": "返回header对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_header_t*",
+            "name": "header",
+            "desc": "header对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "key",
+            "desc": "header的key。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 查找指定的key，如果找到返回它的value。\n\n\n\n",
+        "name": "http_header_find",
+        "return": {
+          "type": "const char*",
+          "desc": "如果找到，返回指定key的value，否则返回NULL。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_header_t*",
+            "name": "header",
+            "desc": "header对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 销毁header(包括后继节点)。\n\n\n\n",
+        "name": "http_header_destroy",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [
+      {
+        "name": "key",
+        "desc": " 键名。\n\n",
+        "type": "char*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "value",
+        "desc": " 键值。\n\n",
+        "type": "char*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "next",
+        "desc": " 下一个节点。\n\n",
+        "type": "http_header_t*",
+        "annotation": {
+          "readable": true
+        }
+      }
+    ],
+    "header": "http/http_header.h",
+    "desc": "\n HTTP request/response中header的key/value对象。\n\n\n",
+    "name": "http_header_t",
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "const char*",
+            "name": "url",
+            "desc": "url。"
+          },
+          {
+            "type": "http_request_on_event_t",
+            "name": "on_event",
+            "desc": "事件回调函数。"
+          },
+          {
+            "type": "void*",
+            "name": "ctx",
+            "desc": "事件回调函数的上下文。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建一个GET请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "name": "http_request_create_get",
+        "return": {
+          "type": "http_request_t*",
+          "desc": "返回request对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "const char*",
+            "name": "url",
+            "desc": "url。"
+          },
+          {
+            "type": "http_request_on_event_t",
+            "name": "on_event",
+            "desc": "事件回调函数。"
+          },
+          {
+            "type": "void*",
+            "name": "ctx",
+            "desc": "事件回调函数的上下文。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建一个DELETE请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "name": "http_request_create_delete",
+        "return": {
+          "type": "http_request_t*",
+          "desc": "返回request对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "const char*",
+            "name": "url",
+            "desc": "url。"
+          },
+          {
+            "type": "http_request_on_event_t",
+            "name": "on_event",
+            "desc": "事件回调函数。"
+          },
+          {
+            "type": "void*",
+            "name": "ctx",
+            "desc": "事件回调函数的上下文。"
+          },
+          {
+            "type": "const char*",
+            "name": "content_type",
+            "desc": "上传内容的类型。"
+          },
+          {
+            "type": "const void*",
+            "name": "data",
+            "desc": "要上传的数据。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "data_size",
+            "desc": "要上传的数据的长度。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建一个PUT请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "name": "http_request_create_put",
+        "return": {
+          "type": "http_request_t*",
+          "desc": "返回request对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "const char*",
+            "name": "url",
+            "desc": "url。"
+          },
+          {
+            "type": "http_request_on_event_t",
+            "name": "on_event",
+            "desc": "事件回调函数。"
+          },
+          {
+            "type": "void*",
+            "name": "ctx",
+            "desc": "事件回调函数的上下文。"
+          },
+          {
+            "type": "const char*",
+            "name": "content_type",
+            "desc": "上传内容的类型。"
+          },
+          {
+            "type": "const void*",
+            "name": "data",
+            "desc": "要上传的数据。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "data_size",
+            "desc": "要上传的数据的长度。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建一个POST请求。\n\n 回调函数在GUI线程中执行，在回调函数中可以直接操作GUI的控件。\n\n\n\n",
+        "name": "http_request_create_post",
+        "return": {
+          "type": "http_request_t*",
+          "desc": "返回request对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_request_t*",
+            "name": "request",
+            "desc": "http request对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "key",
+            "desc": "header的键名。"
+          },
+          {
+            "type": "const char*",
+            "name": "value",
+            "desc": "header的键值。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 增加一个header。\n\n\n\n",
+        "name": "http_request_add_header",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_request_t*",
+            "name": "request",
+            "desc": "http request对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 设置abort标志，通知服务取消本次请求。\n\n\n\n",
+        "name": "http_request_abort",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_request_t*",
+            "name": "request",
+            "desc": "http request对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 销毁request对象。\n\n\n\n",
+        "name": "http_request_destroy",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [
+      {
+        "name": "url",
+        "desc": " url。\n\n",
+        "type": "char*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "method",
+        "desc": " method。\n\n",
+        "type": "char*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "header",
+        "desc": " 额外的header信息。\n\n",
+        "type": "http_header_t*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "body",
+        "desc": " PUT/POST请求上传的数据。\n\n",
+        "type": "void*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "body_size",
+        "desc": " PUT/POST请求上传的数据的长度。\n\n",
+        "type": "uint32_t",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "abort",
+        "desc": " 取消本次请求。\n\n",
+        "type": "bool_t",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "response",
+        "desc": " 请求的结果。\n\n",
+        "type": "http_response_t*",
+        "annotation": {
+          "readable": true
+        }
+      }
+    ],
+    "header": "http/http_request.h",
+    "desc": "\n HTTP request\n\n\n",
+    "name": "http_request_t",
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [],
+        "annotation": {},
+        "desc": "\n 创建一个response对象。\n\n\n",
+        "name": "http_response_create",
+        "return": {
+          "type": "http_response_t*",
+          "desc": "返回response对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "code",
+            "desc": "响应码。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 设置status。\n\n\n\n",
+        "name": "http_response_set_status_code",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "key",
+            "desc": "header的键名。"
+          },
+          {
+            "type": "const char*",
+            "name": "value",
+            "desc": "header的键值。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 增加一个header。\n\n\n\n",
+        "name": "http_response_add_header",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "response对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "key",
+            "desc": "header的key。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 查找指定的key，如果找到返回它的value。\n\n\n\n",
+        "name": "http_response_find_header",
+        "return": {
+          "type": "const char*",
+          "desc": "如果找到，返回指定key的value，否则返回NULL。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "const void*",
+            "name": "body",
+            "desc": "数据。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "data_size",
+            "desc": "数据的长度。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 追加下载的数据。\n\n\n\n",
+        "name": "http_response_append_body_data",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "bool_t",
+            "name": "done",
+            "desc": "是否完成。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 设置完成标志。\n\n\n\n",
+        "name": "http_response_set_done",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "bool_t",
+            "name": "fail",
+            "desc": "是否失败。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 设置失败标志。\n\n\n\n",
+        "name": "http_response_set_fail",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "uploaded_size",
+            "desc": "已经上传数据的大小。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 更新已经上传数据的大小。\n\n\n\n",
+        "name": "http_response_set_uploaded_size",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "buffer",
+            "desc": "一行数据。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 解析一行数据。\n\n\n\n",
+        "name": "http_response_parse_line",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n lock response对象。\n\n\n\n",
+        "name": "http_response_lock",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n lock response对象。\n\n\n\n",
+        "name": "http_response_unlock",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "http_response_t*",
+            "name": "response",
+            "desc": "http response对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 销毁response对象。\n\n\n\n",
+        "name": "http_response_destroy",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [
+      {
+        "name": "status_code",
+        "desc": " HTTP response 的status code。\n\n",
+        "type": "uint32_t",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "header",
+        "desc": " header信息。\n\n",
+        "type": "http_header_t*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "body",
+        "desc": " 下载的数据。\n\n",
+        "type": "void*",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "body_size",
+        "desc": " 下载的数据的长度(已经下载)。\n\n",
+        "type": "uint32_t",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "uploaded_size",
+        "desc": " PUT/POST请求，已经上传的数据的长度。\n\n",
+        "type": "uint32_t",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "done;",
+        "desc": " 整个请求完成。\n\n",
+        "type": "bool_t",
+        "annotation": {
+          "readable": true
+        }
+      },
+      {
+        "name": "fail;",
+        "desc": " 请求失败。\n\n",
+        "type": "bool_t",
+        "annotation": {
+          "readable": true
+        }
+      }
+    ],
+    "header": "http/http_response.h",
+    "desc": "\n HTTP response\n\n 在request->on_event回调函数中，可以直接访问本类的成员。\n\n\n",
+    "name": "http_response_t",
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "http_request_t*",
+            "name": "request",
+            "desc": "HTTP请求对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": " 启动一个lite service线程处理HTTP请求，在处理过程会把事件通过request->on_event通知调用者。\n\n request->on_event在UI线程中执行，所以在该函数中可以操作GUI的控件。\n\n request只能在request->response的fail标志或done标志为TRUE后才能销毁。\n\n 可以通过http_request_abort取消请求，取消请求异步执行，可能会有一定延迟。\n\n 本函数适合一般的REST API，不适合传输大文件，也不适合同时发送大量请求。\n\n\n\n\n",
+        "name": "http_request",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [],
+        "annotation": {},
+        "desc": " 全局初始化，在应用程序初始化时调用。\n\n\n\n",
+        "name": "http_init",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [],
+        "annotation": {},
+        "desc": " 全局~初始化，在应用程序结束时调用。\n\n\n\n",
+        "name": "http_deinit",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [],
+    "header": "http/http.h",
+    "desc": "\n HTTP请求。\n\n\n",
+    "name": "http_t",
+    "annotation": {
+      "fake": true
+    },
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "lite_service_vtable_t*",
+            "name": "vt",
+            "desc": "lite_service虚表。"
+          },
+          {
+            "type": "void*",
+            "name": "init_data",
+            "desc": "初始化数据。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建lite service对象。\n\n\n\n",
+        "name": "lite_service_create",
+        "return": {
+          "type": "lite_service_t*",
+          "desc": "返回lite_service对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "lite_service_t*",
+            "name": "service",
+            "desc": "lite_service对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 运行服务(由服务线程调用)。\n\n\n\n",
+        "name": "lite_service_run",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "lite_service_t*",
+            "name": "service",
+            "desc": "lite_service对象。"
+          },
+          {
+            "type": "event_func_t",
+            "name": "on_event",
+            "desc": "事件处理函数。"
+          },
+          {
+            "type": "void*",
+            "name": "ctx",
+            "desc": "事件处理函数的上下文。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 注册服务的事件。事件处理函数自动放到GUI线程执行。\n\n\n\n",
+        "name": "lite_service_set_on_event",
+        "return": {
+          "type": "uint32_t",
+          "desc": "返回ID用于注销。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "lite_service_t*",
+            "name": "service",
+            "desc": "lite_service对象。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "cmd",
+            "desc": "命令ID。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "data_size",
+            "desc": "数据长度。"
+          },
+          {
+            "type": "const void*",
+            "name": "data",
+            "desc": "数据。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 请求服务。\n\n\n\n",
+        "name": "lite_service_request",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "lite_service_t*",
+            "name": "service",
+            "desc": "lite_service对象。"
+          },
+          {
+            "type": "event_t*",
+            "name": "event",
+            "desc": "事件。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "event_size",
+            "desc": "事件的大小。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 分发事件(放在UI的idle中执行)。\n\n\n\n",
+        "name": "lite_service_dispatch",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "lite_service_t*",
+            "name": "service",
+            "desc": "lite_service对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 销毁服务。\n\n\n\n",
+        "name": "lite_service_destroy",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [],
+    "header": "lite_service/lite_service.h",
+    "desc": "\n 服务基类。\n\n\n",
+    "name": "lite_service_t",
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "uint32_t",
+            "name": "size",
+            "desc": "Buffer的大小。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "max_payload_size",
+            "desc": "payload最大长度。"
+          },
+          {
+            "type": "request_queue_on_request_t",
+            "name": "on_request",
+            "desc": "请求处理函数。"
+          },
+          {
+            "type": "void*",
+            "name": "on_request_ctx",
+            "desc": "请求处理函数的上下文。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 创建request queue对象。\n\n\n\n",
+        "name": "request_queue_create",
+        "return": {
+          "type": "request_queue_t*",
+          "desc": "返回request_queue对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "request_queue_t*",
+            "name": "q",
+            "desc": "request_queue对象。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "cmd",
+            "desc": "命令ID。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "payload_size",
+            "desc": "数据长度。"
+          },
+          {
+            "type": "const void*",
+            "name": "payload",
+            "desc": "数据(可以为NULL)。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 发送一个请求。\n\n\n\n",
+        "name": "request_queue_send",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "request_queue_t*",
+            "name": "q",
+            "desc": "request_queue对象。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "max_requests",
+            "desc": "最大处理请求的个数。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 处理队列中的请求(由服务线程调用)。\n\n\n\n",
+        "name": "request_queue_process",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "request_queue_t*",
+            "name": "q",
+            "desc": "request_queue对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 销毁队列。\n\n\n\n",
+        "name": "request_queue_destroy",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "const lite_service_vtable_t*",
+            "name": "vt",
+            "desc": "lite_service vtable对象。"
+          },
+          {
+            "type": "void*",
+            "name": "init_data",
+            "desc": "初始化数据。"
+          },
+          {
+            "type": "event_func_t",
+            "name": "on_event",
+            "desc": "事件处理函数。"
+          },
+          {
+            "type": "void*",
+            "name": "on_event_ctx",
+            "desc": "事件处理函数的上下文。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 启动服务线程。\n\n\n\n",
+        "name": "service_thread_start",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "tk_thread_t*",
+            "name": "service",
+            "desc": "service thread对象。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "cmd",
+            "desc": "命令ID。"
+          },
+          {
+            "type": "uint32_t",
+            "name": "data_size",
+            "desc": "数据长度。"
+          },
+          {
+            "type": "const void*",
+            "name": "data",
+            "desc": "数据。"
+          }
+        ],
+        "annotation": {},
+        "desc": "\n 请求服务。\n\n\n\n",
+        "name": "service_thread_request",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [],
+    "header": "lite_service/request_queue.h",
+    "desc": "\n 请求队列。\n\n\n",
+    "name": "request_queue_t",
+    "level": 1
+  }
+]
