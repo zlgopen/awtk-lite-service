@@ -24,69 +24,70 @@
 #include "tkc/event.h"
 
 #include "async/async.h"
-#include "lite_service/service_thread.h"
+#include "tkc/action_thread_pool.h"
 
-typedef struct _async_request_t {
+static action_thread_pool_t* s_async_thread_pool = NULL;
+
+typedef struct _async_call_info_t {
   void* ctx;
   async_exec_t exec;
   async_on_result_t on_result;
+}async_call_info_t;
 
-  ret_t result;
-} async_request_t;
+static ret_t async_call_info_init(async_call_info_t* info, async_exec_t exec, 
+    async_on_result_t on_result, void* ctx) {
+  return_value_if_fail(info != NULL && exec != NULL, RET_BAD_PARAMS);
 
-typedef enum _async_call_event_t { EVT_ASYNC_CALL_RESULT = 512 } async_call_event_t;
-
-static ret_t async_call_service_run(lite_service_t* service) {
-  event_t e = event_init(EVT_ASYNC_CALL_RESULT, service);
-  async_request_t* request = (async_request_t*)(service->init_data);
-
-  request->result = request->exec(request->ctx);
-
-  return lite_service_dispatch(service, &e, sizeof(e));
-}
-
-static const lite_service_vtable_t s_async_call_service_vt = {
-    .size = sizeof(lite_service_t),
-    .type = "async",
-    .desc = "async call",
-    .run = async_call_service_run
-};
-
-static ret_t async_call_service_on_event(void* ctx, event_t* e) {
-  ret_t ret = RET_OK;
-  async_request_t* request = (async_request_t*)ctx;
-
-  if (request->on_result != NULL) {
-    ret = request->on_result(request->ctx, request->result);
-  }
-
-  TKMEM_FREE(request);
+  info->ctx = ctx;
+  info->exec = exec;
+  info->on_result = on_result;
 
   return RET_OK;
 }
 
-static async_request_t* async_request_create(async_exec_t exec, async_on_result_t on_result,
-                                             void* ctx) {
-  async_request_t* request = NULL;
-  return_value_if_fail(exec != NULL, NULL);
+static ret_t qaction_async_exec(qaction_t* action) {
+  async_call_info_t* info = (async_call_info_t*)action->args;
 
-  request = TKMEM_ZALLOC(async_request_t);
-  return_value_if_fail(request != NULL, NULL);
+  return info->exec(info->ctx);
+}
 
-  request->ctx = ctx;
-  request->exec = exec;
-  request->on_result = on_result;
+static ret_t qaction_async_on_event(qaction_t* action, event_t* event) {
+  async_call_info_t* info = (async_call_info_t*)action->args;
 
-  return request;
+  if(event->type == EVT_DONE) {
+    done_event_t* e = (done_event_t*)event;
+    info->on_result(info->ctx, e->result); 
+    qaction_destroy(action);
+  }
+
+  return RET_OK;
 }
 
 ret_t async_call(async_exec_t exec, async_on_result_t on_result, void* ctx) {
-  tk_thread_t* thread = NULL;
-  async_request_t* request = async_request_create(exec, on_result, ctx);
-  return_value_if_fail(request != NULL, RET_BAD_PARAMS);
+  qaction_t* a = NULL;
+  async_call_info_t info;
+  return_value_if_fail(async_call_info_init(&info, exec, on_result, ctx) == RET_OK, RET_FAIL);
+  
+  a = qaction_create(qaction_async_exec, &info, sizeof(info));
+  ENSURE(qaction_set_on_event(a, qaction_async_on_event) == RET_OK);
 
-  thread = service_thread_start(&s_async_call_service_vt, request, 
-      async_call_service_on_event, request);
-
-  return thread != NULL ? RET_OK : RET_FAIL;
+  return action_thread_pool_exec(s_async_thread_pool, a);
 }
+
+ret_t async_call_init(void) {
+  return_value_if_fail(s_async_thread_pool == NULL, RET_BAD_PARAMS);
+  s_async_thread_pool = action_thread_pool_create(5, 1);
+  return_value_if_fail(s_async_thread_pool != NULL, RET_BAD_PARAMS);
+
+  return RET_OK;
+}
+
+ret_t async_call_deinit(void) {
+  return_value_if_fail(s_async_thread_pool != NULL, RET_BAD_PARAMS);
+
+  action_thread_pool_destroy(s_async_thread_pool);
+  s_async_thread_pool = NULL;
+
+  return RET_OK;
+}
+

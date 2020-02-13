@@ -26,7 +26,7 @@
 
 BEGIN_C_DECLS
 
-typedef ret_t (*http_request_on_event_t)(void* ctx, http_request_t* request, http_response_t* resp);
+typedef ret_t (*http_request_on_event_t)(void* ctx, http_request_t* request);
 
 /**
  * @class http_request_t

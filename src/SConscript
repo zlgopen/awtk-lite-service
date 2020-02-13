@@ -4,6 +4,5 @@ import sys
 env=DefaultEnvironment().Clone()
 LIB_DIR=os.environ['LIB_DIR'];
 
-env.Library(os.path.join(LIB_DIR, 'lite_service'), Glob('lite_service/*.c'))
 env.Library(os.path.join(LIB_DIR, 'http'), Glob('http/*.c'))
 env.Library(os.path.join(LIB_DIR, 'async'), Glob('async/*.c'))

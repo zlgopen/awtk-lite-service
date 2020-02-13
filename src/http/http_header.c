@@ -62,7 +62,7 @@ const char* http_header_find(http_header_t* header, const char* key) {
   return_value_if_fail(key != NULL, NULL);
 
   while (iter != NULL) {
-    if (tk_str_eq(iter->key, key)) {
+    if (tk_str_ieq(iter->key, key)) {
       return iter->value;
     }
 

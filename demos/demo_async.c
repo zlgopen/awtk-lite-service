@@ -30,8 +30,14 @@ static ret_t do_sth_take_time(void* ctx) {
   return RET_OK;
 }
 
+static ret_t enable_button(const idle_info_t* info) {
+  widget_set_enable(WIDGET(info->ctx), TRUE);
+
+  return RET_REMOVE;
+}
+
 static ret_t on_do_sth_take_time_done(void* ctx, ret_t result) {
-  widget_set_enable(WIDGET(ctx), TRUE);
+  idle_queue(enable_button, ctx);;
   log_debug("on_do_sth_take_time_done: result = %d\n", result);
 
   return RET_OK;
@@ -52,6 +58,7 @@ void application_init() {
   widget_t* exec = button_create(win, 0, 0, 0, 0);
   widget_t* status = label_create(win, 0, 0, 0, 0);
 
+  async_call_init();
   widget_set_text(status, L"exe will take 3000 ms");
   widget_set_self_layout_params(status, "center", "m:-60", "100%", "30");
 
@@ -60,6 +67,10 @@ void application_init() {
   widget_on(exec, EVT_CLICK, on_exec_click, exec);
 
   widget_layout(win);
+}
+
+void application_deinit() {
+  async_call_deinit();
 }
 
 #include "demo_main.c"

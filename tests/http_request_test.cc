@@ -6,7 +6,7 @@
 #include <string>
 using std::string;
 
-static ret_t http_request_on_event_dummy(void* ctx, http_request_t* req, http_response_t* resp) {
+static ret_t http_request_on_event_dummy(void* ctx, http_request_t* req) {
   return RET_OK;
 }
 

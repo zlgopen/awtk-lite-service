@@ -20,13 +20,19 @@ const server = http.createServer(function(request, response) {
       response.end(`\ndelete done \ndelay: ${delay}\n`);
     }, delay);
   } else {
-    var html = '';
-    for(let i = 0; i < 1000; i++) {
-      html += '<p>hello awtk</p>\n';
+    var html = '<p>hello awtk</p>\n';
+    var done = 'done\n';
+    var n = 100000;
+    var size = n * html.length + done.length;
+
+    response.writeHead(200, {'Content-Type': 'text/html', 'Content-Length': size})
+
+    for(let i = 0; i < n; i++) {
+      response.write(html);
     }
-    response.writeHead(200, {'Content-Type': 'text/html'})
+
     setTimeout(function() {
-      response.end(`\ndata: ${html} \ndelay: ${delay}\n`);
+      response.end(done);
     }, delay);
   }
 })

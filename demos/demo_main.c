@@ -52,6 +52,7 @@ int main(void) {
   tk_ext_widgets_init();
 
   tk_run();
+  application_deinit();
 
   return 0;
 }

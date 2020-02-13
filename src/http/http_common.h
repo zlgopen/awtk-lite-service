@@ -66,17 +66,6 @@ typedef struct _http_header_t http_header_t;
  */
 #define HTTP_METHOD_DELETE "DELETE"
 
-typedef enum _http_event_t {
-  HTTP_EVENT_START = 512,
-  HTTP_EVENT_PROGRESS,
-  HTTP_EVENT_ERROR,
-  HTTP_EVENT_DONE
-} http_event_t;
-
-typedef enum _http_cmd_t {
-  HTTP_CMD_STOP = 1,
-} http_cmd_t;
-
 END_C_DECLS
 
 #endif /*TK_HTTP_COMMON_H*/
