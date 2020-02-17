@@ -107,15 +107,15 @@ size_t http_on_curl_body_data(char* buffer, size_t size, size_t nmemb, void* ctx
   if (http->down_content_length <= 0) {
     const char* value = http_response_find(http->response, "Content-Length");
 
-    if(value != NULL) {
+    if (value != NULL) {
       http->down_content_length = tk_atoi(value);
     }
   }
 
   http_response_append_body_data(http->response, buffer, total_size);
- 
-  if(http->down_content_length > 0) {
-    percent = ((100 * http->response->body_size)/http->down_content_length);
+
+  if (http->down_content_length > 0) {
+    percent = ((100 * http->response->body_size) / http->down_content_length);
   } else {
     percent = 50;
   }
@@ -216,7 +216,7 @@ static ret_t http_agent_on_event(qaction_t* action, event_t* e) {
     http_response_unlock(request->response);
   }
 
-  if(e->type == EVT_DONE) {
+  if (e->type == EVT_DONE) {
     if (http->request_header != NULL) {
       curl_slist_free_all(http->request_header);
     }
@@ -254,11 +254,10 @@ ret_t http_request(http_request_t* request) {
   return_value_if_fail(request != NULL, RET_BAD_PARAMS);
 
   a = qaction_create(http_agent_exec, NULL, sizeof(http_agent_curl_t));
-  
+
   http = http_agent_curl_from_action(a);
   http->request = request;
   ENSURE(qaction_set_on_event(a, http_agent_on_event) == RET_OK);
 
   return action_thread_pool_exec(s_http_thread_pool, a);
 }
-

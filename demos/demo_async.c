@@ -37,7 +37,8 @@ static ret_t enable_button(const idle_info_t* info) {
 }
 
 static ret_t on_do_sth_take_time_done(void* ctx, ret_t result) {
-  idle_queue(enable_button, ctx);;
+  idle_queue(enable_button, ctx);
+  ;
   log_debug("on_do_sth_take_time_done: result = %d\n", result);
 
   return RET_OK;

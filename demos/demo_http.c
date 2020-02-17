@@ -48,7 +48,7 @@ typedef struct _update_info_t {
   uint32_t status_code;
   uint32_t body_size;
   bool_t done;
-}update_info_t;
+} update_info_t;
 
 static update_info_t* update_info_create(uint32_t status_code, uint32_t body_size, bool_t done) {
   update_info_t* info = TKMEM_ZALLOC(update_info_t);
@@ -71,8 +71,8 @@ static ret_t update_info_destroy(update_info_t* info) {
 static ret_t update_ui_in_idle(const idle_info_t* info) {
   char buff[128];
   update_info_t* update_info = (update_info_t*)(info->ctx);
-  tk_snprintf(buff, sizeof(buff), "status=%d downloaded=%u", 
-      update_info->status_code, update_info->body_size);
+  tk_snprintf(buff, sizeof(buff), "status=%d downloaded=%u", update_info->status_code,
+              update_info->body_size);
   widget_set_text_utf8(s_app.status, buff);
   widget_invalidate_force(s_app.status, NULL);
 
@@ -89,12 +89,12 @@ static ret_t update_ui_in_idle(const idle_info_t* info) {
 
 static ret_t on_http_event(void* ctx, http_request_t* req) {
   http_response_t* resp = req->response;
-  bool_t done = resp->done || resp->fail; 
-  update_info_t* info = update_info_create(resp->status_code, resp->body_size, done); 
+  bool_t done = resp->done || resp->fail;
+  update_info_t* info = update_info_create(resp->status_code, resp->body_size, done);
 
   idle_queue(update_ui_in_idle, info);
-  if(done) {
-    //log_debug("%s\n", resp->body);
+  if (done) {
+    // log_debug("%s\n", resp->body);
   }
 
   return RET_OK;
@@ -169,7 +169,6 @@ static ret_t on_quit_click(void* ctx, event_t* e) {
   return RET_OK;
 }
 
-
 void application_init() {
   widget_t* win = window_create(NULL, 0, 0, 0, 0);
   widget_t* get = button_create(win, 0, 0, 0, 0);
@@ -203,7 +202,7 @@ void application_init() {
   widget_set_text(abort, L"Abort");
   widget_set_self_layout_params(abort, "center", "m:80", "50%", "30");
   widget_on(abort, EVT_CLICK, on_abort_click, abort);
-  
+
   widget_set_text(quit, L"Quit");
   widget_set_self_layout_params(quit, "center", "m:120", "50%", "30");
   widget_on(quit, EVT_CLICK, on_quit_click, quit);

@@ -5,11 +5,18 @@ import platform
 env=DefaultEnvironment().Clone()
 BIN_DIR=os.environ['BIN_DIR'];
 
-env['LIBS'] = ['lite_service', 'http', 'async', 'curl'] + env['LIBS']
+env['LIBS'] = ['http', 'async', 'curl'] + env['LIBS']
 if platform.system() == 'Windows':
   env['LIBS'] = ['Ws2_32', 'Wldap32'] + env['LIBS']
 
 env.Program(os.path.join(BIN_DIR, 'demo_http'), ['demo_http.c'])
 env.Program(os.path.join(BIN_DIR, 'demo_async'), ['demo_async.c'])
+
+
+env['LIBS'] = ["media_player", "avcodec","avdevice","avfilter","avformat","avresample",
+  "avutil","x264","swscale","swresample","postproc", 
+  'iconv', 'pthread', 'lzma', 'bz2', 'z'] + env['LIBS']
+
+env.Program(os.path.join(BIN_DIR, 'demo_media_player'), ['demo_media_player.c'])
 
 

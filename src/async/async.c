@@ -32,10 +32,10 @@ typedef struct _async_call_info_t {
   void* ctx;
   async_exec_t exec;
   async_on_result_t on_result;
-}async_call_info_t;
+} async_call_info_t;
 
-static ret_t async_call_info_init(async_call_info_t* info, async_exec_t exec, 
-    async_on_result_t on_result, void* ctx) {
+static ret_t async_call_info_init(async_call_info_t* info, async_exec_t exec,
+                                  async_on_result_t on_result, void* ctx) {
   return_value_if_fail(info != NULL && exec != NULL, RET_BAD_PARAMS);
 
   info->ctx = ctx;
@@ -54,9 +54,9 @@ static ret_t qaction_async_exec(qaction_t* action) {
 static ret_t qaction_async_on_event(qaction_t* action, event_t* event) {
   async_call_info_t* info = (async_call_info_t*)action->args;
 
-  if(event->type == EVT_DONE) {
+  if (event->type == EVT_DONE) {
     done_event_t* e = (done_event_t*)event;
-    info->on_result(info->ctx, e->result); 
+    info->on_result(info->ctx, e->result);
     qaction_destroy(action);
   }
 
@@ -67,7 +67,7 @@ ret_t async_call(async_exec_t exec, async_on_result_t on_result, void* ctx) {
   qaction_t* a = NULL;
   async_call_info_t info;
   return_value_if_fail(async_call_info_init(&info, exec, on_result, ctx) == RET_OK, RET_FAIL);
-  
+
   a = qaction_create(qaction_async_exec, &info, sizeof(info));
   ENSURE(qaction_set_on_event(a, qaction_async_on_event) == RET_OK);
 
@@ -90,4 +90,3 @@ ret_t async_call_deinit(void) {
 
   return RET_OK;
 }
-

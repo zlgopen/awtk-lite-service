@@ -22,17 +22,26 @@ os.environ['LIB_DIR'] = APP_LIB_DIR;
 APP_CCFLAGS = ' -DBUILDING_LIBCURL -DRES_ROOT=\"\\\"'+RES_ROOT+'\\\"\" '
 APP_LIBS = ['assets']
 APP_LIBPATH = [APP_LIB_DIR]
-
+APP_LINKFLAGS=" -framework  VideoToolbox -framework CoreVideo -framework CoreMedia -framework AudioToolbox"
+APP_LINKFLAGS = APP_LINKFLAGS + " -framework VideoDecodeAcceleration -framework Security -framework CoreFoundation -framework AVFoundation"
 DefaultEnvironment(
+  AS="nasm -f macho64 -DPIC -DPREFIX -I3rd/ffmpeg/FFmpeg/ -I3rd/ffmpeg/FFmpeg/libavutil/x86/ -Pconfig.asm ",
   CPPPATH   = awtk.CPPPATH + APP_CPPPATH,
-  LINKFLAGS = awtk.LINKFLAGS,
+  LINKFLAGS = awtk.LINKFLAGS + APP_LINKFLAGS,
   LIBS      = APP_LIBS + awtk.LIBS,
   LIBPATH   = APP_LIBPATH + awtk.LIBPATH,
   CCFLAGS   = APP_CCFLAGS + awtk.CCFLAGS, 
   OS_SUBSYSTEM_CONSOLE=awtk.OS_SUBSYSTEM_CONSOLE,
   OS_SUBSYSTEM_WINDOWS=awtk.OS_SUBSYSTEM_WINDOWS)
 
-SConscriptFiles=['src/SConscript', 'tests/SConscript', 'demos/SConscript']
+SConscriptFiles=[
+  'src/async/SConscript', 
+  'src/http/SConscript', 
+  'src/media_player/SConscript', 
+  'tests/SConscript', 
+  'demos/SConscript'
+]
+
 if platform.system() == 'Windows':
   SConscriptFiles = SConscriptFiles + ['3rd/curl/SConscript']
 
