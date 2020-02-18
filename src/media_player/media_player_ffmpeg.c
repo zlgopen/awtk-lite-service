@@ -126,8 +126,9 @@ static void video_display(VideoState* is) {
   }
 
   if (swsContext == NULL) {
+    enum AVPixelFormat format = from_bitmap_format(image->format);
     swsContext = sws_getContext(pFrame->width, pFrame->height, pFrame->format, 
-          image->w,image->h, AV_PIX_FMT_RGBA, 0, NULL, NULL, NULL);
+          image->w,image->h, format, 0, NULL, NULL, NULL);
     /*TODO*/
     is->swsContext = swsContext;
   }

@@ -378,29 +378,27 @@ static SDL_AudioDeviceID audio_dev;
 
 static const struct TextureFormatEntry {
   enum AVPixelFormat format;
-  int texture_fmt;
+  bitmap_format_t texture_fmt;
 } sdl_texture_format_map[] = {
-    {AV_PIX_FMT_RGB8, SDL_PIXELFORMAT_RGB332},
-    {AV_PIX_FMT_RGB444, SDL_PIXELFORMAT_RGB444},
-    {AV_PIX_FMT_RGB555, SDL_PIXELFORMAT_RGB555},
-    {AV_PIX_FMT_BGR555, SDL_PIXELFORMAT_BGR555},
-    {AV_PIX_FMT_RGB565, SDL_PIXELFORMAT_RGB565},
-    {AV_PIX_FMT_BGR565, SDL_PIXELFORMAT_BGR565},
-    {AV_PIX_FMT_RGB24, SDL_PIXELFORMAT_RGB24},
-    {AV_PIX_FMT_BGR24, SDL_PIXELFORMAT_BGR24},
-    {AV_PIX_FMT_0RGB32, SDL_PIXELFORMAT_RGB888},
-    {AV_PIX_FMT_0BGR32, SDL_PIXELFORMAT_BGR888},
-    {AV_PIX_FMT_NE(RGB0, 0BGR), SDL_PIXELFORMAT_RGBX8888},
-    {AV_PIX_FMT_NE(BGR0, 0RGB), SDL_PIXELFORMAT_BGRX8888},
-    {AV_PIX_FMT_RGB32, SDL_PIXELFORMAT_ARGB8888},
-    {AV_PIX_FMT_RGB32_1, SDL_PIXELFORMAT_RGBA8888},
-    {AV_PIX_FMT_BGR32, SDL_PIXELFORMAT_ABGR8888},
-    {AV_PIX_FMT_BGR32_1, SDL_PIXELFORMAT_BGRA8888},
-    {AV_PIX_FMT_YUV420P, SDL_PIXELFORMAT_IYUV},
-    {AV_PIX_FMT_YUYV422, SDL_PIXELFORMAT_YUY2},
-    {AV_PIX_FMT_UYVY422, SDL_PIXELFORMAT_UYVY},
-    {AV_PIX_FMT_NONE, SDL_PIXELFORMAT_UNKNOWN},
+    {AV_PIX_FMT_RGB565, BITMAP_FMT_RGB565},
+    {AV_PIX_FMT_BGR565, BITMAP_FMT_BGR565},
+    {AV_PIX_FMT_ARGB, BITMAP_FMT_ARGB8888},
+    {AV_PIX_FMT_RGBA, BITMAP_FMT_RGBA8888},
+    {AV_PIX_FMT_ABGR, BITMAP_FMT_ABGR8888},
+    {AV_PIX_FMT_BGRA, BITMAP_FMT_BGRA8888},
+    {AV_PIX_FMT_NONE, 0},
 };
+
+static enum AVPixelFormat from_bitmap_format(bitmap_format_t texture_fmt) {
+  uint32_t i = 0;
+  for(i = 0; i < ARRAY_SIZE(sdl_texture_format_map); i++) {
+    if(sdl_texture_format_map[i].texture_fmt == texture_fmt) {
+      return sdl_texture_format_map[i].format;
+    }
+  }
+
+  return AV_PIX_FMT_NONE;
+}
 
 #if CONFIG_AVFILTER
 static int opt_add_vfilter(void* optctx, const char* opt, const char* arg) {
@@ -814,42 +812,6 @@ static void calculate_display_rect(SDL_Rect* rect, int scr_xleft, int scr_ytop, 
   rect->h = FFMAX((int)height, 1);
 }
 
-static void get_sdl_pix_fmt_and_blendmode(int format, Uint32* sdl_pix_fmt,
-                                          SDL_BlendMode* sdl_blendmode) {
-  int i;
-  *sdl_blendmode = SDL_BLENDMODE_NONE;
-  *sdl_pix_fmt = SDL_PIXELFORMAT_UNKNOWN;
-  if (format == AV_PIX_FMT_RGB32 || format == AV_PIX_FMT_RGB32_1 || format == AV_PIX_FMT_BGR32 ||
-      format == AV_PIX_FMT_BGR32_1)
-    *sdl_blendmode = SDL_BLENDMODE_BLEND;
-  for (i = 0; i < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; i++) {
-    if (format == sdl_texture_format_map[i].format) {
-      *sdl_pix_fmt = sdl_texture_format_map[i].texture_fmt;
-      return;
-    }
-  }
-}
-
-static void set_sdl_yuv_conversion_mode(AVFrame* frame) {
-#if SDL_VERSION_ATLEAST(2, 0, 8)
-  SDL_YUV_CONVERSION_MODE mode = SDL_YUV_CONVERSION_AUTOMATIC;
-  if (frame && (frame->format == AV_PIX_FMT_YUV420P || frame->format == AV_PIX_FMT_YUYV422 ||
-                frame->format == AV_PIX_FMT_UYVY422)) {
-    if (frame->color_range == AVCOL_RANGE_JPEG)
-      mode = SDL_YUV_CONVERSION_JPEG;
-    else if (frame->colorspace == AVCOL_SPC_BT709)
-      mode = SDL_YUV_CONVERSION_BT709;
-    else if (frame->colorspace == AVCOL_SPC_BT470BG || frame->colorspace == AVCOL_SPC_SMPTE170M ||
-             frame->colorspace == AVCOL_SPC_SMPTE240M)
-      mode = SDL_YUV_CONVERSION_BT601;
-  }
-  SDL_SetYUVConversionMode(mode);
-#endif
-}
-
-static inline int compute_mod(int a, int b) {
-  return a < 0 ? a % b + b : a % b;
-}
 
 static void stream_component_close(VideoState* is, int stream_index) {
   AVFormatContext* ic = is->ic;
@@ -931,25 +893,6 @@ static void stream_close(VideoState* is) {
   sws_freeContext(is->sub_convert_ctx);
   av_free(is->filename);
   av_free(is);
-}
-
-static void do_exit(VideoState* is) {
-  if (is) {
-    stream_close(is);
-  }
-  uninit_opts();
-#if CONFIG_AVFILTER
-  av_freep(&vfilters_list);
-#endif
-  avformat_network_deinit();
-  if (show_status) printf("\n");
-  SDL_Quit();
-  av_log(NULL, AV_LOG_QUIET, "%s", "");
-  exit(0);
-}
-
-static void sigterm_handler(int sig) {
-  exit(123);
 }
 
 static double get_clock(Clock* c) {
@@ -1299,8 +1242,6 @@ static int queue_picture(VideoState* is, AVFrame* src_frame, double pts, double 
 
   av_frame_move_ref(vp->frame, src_frame);
   frame_queue_push(&is->pictq);
-  is->frame_width = vp->width;
-  is->frame_height = vp->height;
 
   return 0;
 }
@@ -1763,22 +1704,6 @@ static int subtitle_thread(void* arg) {
   return 0;
 }
 
-/* copy samples for viewing in editor window */
-static void update_sample_display(VideoState* is, short* samples, int samples_size) {
-  int size, len;
-
-  size = samples_size / sizeof(short);
-  while (size > 0) {
-    len = SAMPLE_ARRAY_SIZE - is->sample_array_index;
-    if (len > size) len = size;
-    memcpy(is->sample_array + is->sample_array_index, samples, len * sizeof(short));
-    samples += len;
-    is->sample_array_index += len;
-    if (is->sample_array_index >= SAMPLE_ARRAY_SIZE) is->sample_array_index = 0;
-    size -= len;
-  }
-}
-
 /* return the wanted number of samples to get better sync if sync_type is video
  * or external master clock */
 static int synchronize_audio(VideoState* is, int nb_samples) {
@@ -1956,8 +1881,6 @@ static void sdl_audio_callback(void* opaque, Uint8* stream, int len) {
         is->audio_buf_size =
             SDL_AUDIO_MIN_BUFFER_SIZE / is->audio_tgt.frame_size * is->audio_tgt.frame_size;
       } else {
-        if (is->show_mode != SHOW_MODE_VIDEO)
-          update_sample_display(is, (int16_t*)is->audio_buf, audio_size);
         is->audio_buf_size = audio_size;
       }
       is->audio_buf_index = 0;
@@ -2371,7 +2294,8 @@ static int read_thread(void* arg) {
     AVCodecParameters* codecpar = st->codecpar;
     AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
     if (codecpar->width) {
-      printf("XXX\n");
+      is->frame_width = codecpar->width;
+      is->frame_height = codecpar->height;
     }
   }
 
@@ -2585,184 +2509,6 @@ static VideoState* stream_open(const char* filename, AVInputFormat* iformat) {
   return is;
 }
 
-static void stream_cycle_channel(VideoState* is, int codec_type) {
-  AVFormatContext* ic = is->ic;
-  int start_index, stream_index;
-  int old_index;
-  AVStream* st;
-  AVProgram* p = NULL;
-  int nb_streams = is->ic->nb_streams;
-
-  if (codec_type == AVMEDIA_TYPE_VIDEO) {
-    start_index = is->last_video_stream;
-    old_index = is->video_stream;
-  } else if (codec_type == AVMEDIA_TYPE_AUDIO) {
-    start_index = is->last_audio_stream;
-    old_index = is->audio_stream;
-  } else {
-    start_index = is->last_subtitle_stream;
-    old_index = is->subtitle_stream;
-  }
-  stream_index = start_index;
-
-  if (codec_type != AVMEDIA_TYPE_VIDEO && is->video_stream != -1) {
-    p = av_find_program_from_stream(ic, NULL, is->video_stream);
-    if (p) {
-      nb_streams = p->nb_stream_indexes;
-      for (start_index = 0; start_index < nb_streams; start_index++)
-        if (p->stream_index[start_index] == stream_index) break;
-      if (start_index == nb_streams) start_index = -1;
-      stream_index = start_index;
-    }
-  }
-
-  for (;;) {
-    if (++stream_index >= nb_streams) {
-      if (codec_type == AVMEDIA_TYPE_SUBTITLE) {
-        stream_index = -1;
-        is->last_subtitle_stream = -1;
-        goto the_end;
-      }
-      if (start_index == -1) return;
-      stream_index = 0;
-    }
-    if (stream_index == start_index) return;
-    st = is->ic->streams[p ? p->stream_index[stream_index] : stream_index];
-    if (st->codecpar->codec_type == codec_type) {
-      /* check that parameters are OK */
-      switch (codec_type) {
-        case AVMEDIA_TYPE_AUDIO:
-          if (st->codecpar->sample_rate != 0 && st->codecpar->channels != 0) goto the_end;
-          break;
-        case AVMEDIA_TYPE_VIDEO:
-        case AVMEDIA_TYPE_SUBTITLE:
-          goto the_end;
-        default:
-          break;
-      }
-    }
-  }
-the_end:
-  if (p && stream_index != -1) stream_index = p->stream_index[stream_index];
-  av_log(NULL, AV_LOG_INFO, "Switch %s stream from #%d to #%d\n",
-         av_get_media_type_string(codec_type), old_index, stream_index);
-
-  stream_component_close(is, old_index);
-  stream_component_open(is, stream_index);
-}
-
-static void toggle_audio_display(VideoState* is) {
-  int next = is->show_mode;
-  do {
-    next = (next + 1) % SHOW_MODE_NB;
-  } while (next != is->show_mode &&
-           (next == SHOW_MODE_VIDEO && !is->video_st || next != SHOW_MODE_VIDEO && !is->audio_st));
-  if (is->show_mode != next) {
-    is->force_refresh = 1;
-    is->show_mode = next;
-  }
-}
-
-static void refresh_loop_wait_event(VideoState* is, SDL_Event* event) {
-  double remaining_time = 0.0;
-  SDL_PumpEvents();
-  while (!SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) {
-    if (!cursor_hidden && av_gettime_relative() - cursor_last_shown > CURSOR_HIDE_DELAY) {
-      SDL_ShowCursor(0);
-      cursor_hidden = 1;
-    }
-    if (remaining_time > 0.0) av_usleep((int64_t)(remaining_time * 1000000.0));
-    remaining_time = REFRESH_RATE;
-    if (is->show_mode != SHOW_MODE_NONE && (!is->paused || is->force_refresh))
-      video_refresh(is, &remaining_time);
-    SDL_PumpEvents();
-  }
-}
-
-static void seek_chapter(VideoState* is, int incr) {
-  int64_t pos = get_master_clock(is) * AV_TIME_BASE;
-  int i;
-
-  if (!is->ic->nb_chapters) return;
-
-  /* find the current chapter */
-  for (i = 0; i < is->ic->nb_chapters; i++) {
-    AVChapter* ch = is->ic->chapters[i];
-    if (av_compare_ts(pos, AV_TIME_BASE_Q, ch->start, ch->time_base) < 0) {
-      i--;
-      break;
-    }
-  }
-
-  i += incr;
-  i = FFMAX(i, 0);
-  if (i >= is->ic->nb_chapters) return;
-
-  av_log(NULL, AV_LOG_VERBOSE, "Seeking to chapter %d.\n", i);
-  stream_seek(
-      is, av_rescale_q(is->ic->chapters[i]->start, is->ic->chapters[i]->time_base, AV_TIME_BASE_Q),
-      0, 0);
-}
-
-static int opt_frame_size(void* optctx, const char* opt, const char* arg) {
-  av_log(NULL, AV_LOG_WARNING, "Option -s is deprecated, use -video_size.\n");
-  return opt_default(NULL, "video_size", arg);
-}
-
-static int opt_width(void* optctx, const char* opt, const char* arg) {
-  screen_width = parse_number_or_die(opt, arg, OPT_INT64, 1, INT_MAX);
-  return 0;
-}
-
-static int opt_height(void* optctx, const char* opt, const char* arg) {
-  screen_height = parse_number_or_die(opt, arg, OPT_INT64, 1, INT_MAX);
-  return 0;
-}
-
-static int opt_frame_pix_fmt(void* optctx, const char* opt, const char* arg) {
-  av_log(NULL, AV_LOG_WARNING, "Option -pix_fmt is deprecated, use -pixel_format.\n");
-  return opt_default(NULL, "pixel_format", arg);
-}
-
-static int opt_sync(void* optctx, const char* opt, const char* arg) {
-  if (!strcmp(arg, "audio"))
-    av_sync_type = AV_SYNC_AUDIO_MASTER;
-  else if (!strcmp(arg, "video"))
-    av_sync_type = AV_SYNC_VIDEO_MASTER;
-  else if (!strcmp(arg, "ext"))
-    av_sync_type = AV_SYNC_EXTERNAL_CLOCK;
-  else {
-    av_log(NULL, AV_LOG_ERROR, "Unknown value for %s: %s\n", opt, arg);
-    exit(1);
-  }
-  return 0;
-}
-
-static int opt_codec(void* optctx, const char* opt, const char* arg) {
-  const char* spec = strchr(opt, ':');
-  if (!spec) {
-    av_log(NULL, AV_LOG_ERROR, "No media specifier was specified in '%s' in option '%s'\n", arg,
-           opt);
-    return AVERROR(EINVAL);
-  }
-  spec++;
-  switch (spec[0]) {
-    case 'a':
-      audio_codec_name = arg;
-      break;
-    case 's':
-      subtitle_codec_name = arg;
-      break;
-    case 'v':
-      video_codec_name = arg;
-      break;
-    default:
-      av_log(NULL, AV_LOG_ERROR, "Invalid media specifier '%s' in option '%s'\n", spec, opt);
-      return AVERROR(EINVAL);
-  }
-  return 0;
-}
-
 /* Called from the main */
 static int ffmpeg_init(void) {
   static int inited = FALSE;
@@ -2778,8 +2524,6 @@ static int ffmpeg_init(void) {
   av_log_set_flags(AV_LOG_SKIP_REPEATED);
 
   init_opts();
-  signal(SIGINT, sigterm_handler);  /* Interrupt (ANSI).    */
-  signal(SIGTERM, sigterm_handler); /* Termination (ANSI).  */
   display_disable = 0;
   av_init_packet(&flush_pkt);
   flush_pkt.data = (uint8_t*)&flush_pkt;
