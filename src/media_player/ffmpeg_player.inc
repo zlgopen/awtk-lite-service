@@ -310,6 +310,7 @@ typedef struct _VideoState {
   /*media player*/
   struct SwsContext* swsContext;
   bitmap_t* image;
+  uint32_t rotation;
   uint32_t frame_width;
   uint32_t frame_height;
 } VideoState;
@@ -1389,6 +1390,7 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
 
   if (autorotate) {
     double theta = get_rotation(is->video_st);
+    is->rotation = theta;
 
     if (fabs(theta - 90) < 1.0) {
       INSERT_FILT("transpose", "clock");
