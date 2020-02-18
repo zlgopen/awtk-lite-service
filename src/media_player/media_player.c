@@ -121,3 +121,17 @@ uint32_t media_player_get_duration(media_player_t* player) {
 
   return player->vt->get_duration(player);
 }
+
+uint32_t media_player_get_video_width(media_player_t* player) {
+  return_value_if_fail(player != NULL && player->vt != NULL, 0);
+  return_value_if_fail(player->vt->get_video_width != NULL, 0);
+
+  return player->vt->get_video_width(player);
+}
+
+uint32_t media_player_get_video_height(media_player_t* player) {
+  return_value_if_fail(player != NULL && player->vt != NULL, 0);
+  return_value_if_fail(player->vt->get_video_height != NULL, 0);
+
+  return player->vt->get_video_height(player);
+}

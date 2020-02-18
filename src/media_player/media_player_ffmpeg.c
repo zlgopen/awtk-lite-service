@@ -37,7 +37,11 @@ static ret_t media_player_ffmpeg_load(media_player_t* player, const char* url) {
   }
 
   ffmpeg->is = stream_open(url, NULL);
-  toggle_pause(ffmpeg->is);
+  if(ffmpeg->is != NULL) {
+    ffmpeg->is->frame_width = 0;
+    ffmpeg->is->frame_height = 0;
+    toggle_pause(ffmpeg->is);
+  }
 
   return RET_OK;
 }
@@ -82,7 +86,7 @@ static ret_t media_player_ffmpeg_seek(media_player_t* player, uint32_t offset) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
   return_value_if_fail(ffmpeg->is != NULL, RET_BAD_PARAMS);
 
-  stream_seek(ffmpeg->is, offset, 0, 0);
+  stream_seek(ffmpeg->is, offset * 1000, 0, 0);
 
   return RET_OK;
 }
@@ -184,7 +188,7 @@ static uint32_t media_player_ffmpeg_get_position(media_player_t* player) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
   return_value_if_fail(ffmpeg->is != NULL, 0);
 
-  return ffmpeg->is->seek_pos;
+  return tk_max(ffmpeg->is->vidclk.pts, ffmpeg->is->audclk.pts) * 1000;
 }
 
 static uint32_t media_player_ffmpeg_get_duration(media_player_t* player) {
@@ -192,6 +196,20 @@ static uint32_t media_player_ffmpeg_get_duration(media_player_t* player) {
   return_value_if_fail(ffmpeg->is != NULL, 0);
 
   return ffmpeg->is->ic != NULL ? ffmpeg->is->ic->duration / 1000 : 0;
+}
+
+static uint32_t media_player_ffmpeg_get_video_width(media_player_t* player) {
+  media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
+  return_value_if_fail(ffmpeg->is != NULL, 0);
+
+  return ffmpeg->is->frame_width;
+}
+
+static uint32_t media_player_ffmpeg_get_video_height(media_player_t* player) {
+  media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
+  return_value_if_fail(ffmpeg->is != NULL, 0);
+
+  return ffmpeg->is->frame_height;
 }
 
 static const media_player_vtable_t s_media_player_ffmpeg = {
@@ -208,7 +226,10 @@ static const media_player_vtable_t s_media_player_ffmpeg = {
     .get_state = media_player_ffmpeg_get_state,
     .get_volume = media_player_ffmpeg_get_volume,
     .get_position = media_player_ffmpeg_get_position,
-    .get_duration = media_player_ffmpeg_get_duration};
+    .get_duration = media_player_ffmpeg_get_duration,
+    .get_video_width = media_player_ffmpeg_get_video_width,
+    .get_video_height = media_player_ffmpeg_get_video_height
+};
 
 media_player_t* media_player_ffmpeg_create(void) {
   media_player_ffmpeg_t* player = TKMEM_ZALLOC(media_player_ffmpeg_t);

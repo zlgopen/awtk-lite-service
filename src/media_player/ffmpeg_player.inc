@@ -314,6 +314,8 @@ typedef struct _VideoState {
   /*media player*/
   struct SwsContext* swsContext;
   bitmap_t* image;
+  uint32_t frame_width;
+  uint32_t frame_height;
 } VideoState;
 
 static void video_display(VideoState* is);
@@ -1529,6 +1531,9 @@ static int queue_picture(VideoState* is, AVFrame* src_frame, double pts, double 
 
   av_frame_move_ref(vp->frame, src_frame);
   frame_queue_push(&is->pictq);
+  is->frame_width = vp->width;
+  is->frame_height = vp->height;
+
   return 0;
 }
 

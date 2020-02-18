@@ -70,6 +70,8 @@ typedef media_player_state_t (*media_player_get_state_t)(media_player_t* player)
 typedef uint32_t (*media_player_get_volume_t)(media_player_t* player);
 typedef uint32_t (*media_player_get_position_t)(media_player_t* player);
 typedef uint32_t (*media_player_get_duration_t)(media_player_t* player);
+typedef uint32_t (*media_player_get_video_width_t)(media_player_t* player);
+typedef uint32_t (*media_player_get_video_height_t)(media_player_t* player);
 
 typedef struct _media_player_vtable_t {
   media_player_load_t load;
@@ -86,6 +88,8 @@ typedef struct _media_player_vtable_t {
   media_player_get_volume_t get_volume;
   media_player_get_position_t get_position;
   media_player_get_duration_t get_duration;
+  media_player_get_video_width_t get_video_width;
+  media_player_get_video_height_t get_video_height;
 } media_player_vtable_t;
 
 /**
@@ -233,7 +237,7 @@ uint32_t media_player_get_volume(media_player_t* player);
 uint32_t media_player_get_position(media_player_t* player);
 
 /**
- * @method media_player_get_volume
+ * @method media_player_get_duration
  * 获取时间长度。
  *
  * @param {media_player_t*} media_player media_player对象。
@@ -241,6 +245,26 @@ uint32_t media_player_get_position(media_player_t* player);
  * @return {uint32_t} 返回时间长度(ms)。
  */
 uint32_t media_player_get_duration(media_player_t* player);
+
+/**
+ * @method media_player_get_video_width
+ * 获取视频宽度。
+ *
+ * @param {media_player_t*} media_player media_player对象。
+ *
+ * @return {uint32_t} 返回时间宽度(ms)。
+ */
+uint32_t media_player_get_video_width(media_player_t* player);
+
+/**
+ * @method media_player_get_video_height
+ * 获取视频高度。
+ *
+ * @param {media_player_t*} media_player media_player对象。
+ *
+ * @return {uint32_t} 返回时间高度(ms)。
+ */
+uint32_t media_player_get_video_height(media_player_t* player);
 
 END_C_DECLS
 

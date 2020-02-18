@@ -32,6 +32,9 @@ static ret_t on_load_click(void* ctx, event_t* e) {
 
 static ret_t on_forward_click(void* ctx, event_t* e) {
   media_player_t* player = (media_player_t*)ctx;
+  uint32_t position = media_player_get_position(player) + 3000;
+
+  media_player_seek(player, position);
 
   return RET_OK;
 }
@@ -67,7 +70,10 @@ static ret_t on_quit_click(void* ctx, event_t* e) {
 
 static ret_t mutable_image_prepare_image(void* ctx, bitmap_t* image) {
   media_player_t* player = (media_player_t*)ctx;
+  uint32_t width = media_player_get_video_width(player);
+  uint32_t height = media_player_get_video_height(player);
 
+  log_debug("width=%u height=%u\n", width, height);
   return media_player_get_video_frame(player, image);
 }
 
