@@ -74,9 +74,31 @@ ret_t media_player_toggle_mute(media_player_t* player) {
 
 ret_t media_player_set_on_event(media_player_t* player, event_func_t on_event, void* ctx) {
   return_value_if_fail(player != NULL && player->vt != NULL, RET_BAD_PARAMS);
-  return_value_if_fail(player->vt->set_on_event != NULL, RET_BAD_PARAMS);
 
-  return player->vt->set_on_event(player, on_event, ctx);
+  player->on_event_ctx = ctx;
+  player->on_event = on_event;
+
+  if (player->vt->set_on_event != NULL) {
+    return player->vt->set_on_event(player, on_event, ctx);
+  }
+
+  return RET_OK;
+}
+
+ret_t media_player_notify_simple(media_player_t* player, uint32_t event_type) {
+  event_t e = event_init(event_type, player);
+
+  return media_player_notify(player, &e);
+}
+
+ret_t media_player_notify(media_player_t* player, event_t* e) {
+  return_value_if_fail(player != NULL && player->vt != NULL, RET_BAD_PARAMS);
+
+  if (player->on_event != NULL) {
+    return player->on_event(player->on_event_ctx, e);
+  }
+
+  return RET_OK;
 }
 
 ret_t media_player_get_video_frame(media_player_t* player, bitmap_t* image) {

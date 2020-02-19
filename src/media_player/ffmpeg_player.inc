@@ -308,30 +308,22 @@ typedef struct _VideoState {
   SDL_cond* continue_read_thread;
 
   /*media player*/
-  struct SwsContext* swsContext;
   bitmap_t* image;
-  uint32_t rotation;
   uint32_t frame_width;
   uint32_t frame_height;
+  media_player_t* player;
+  struct SwsContext* swsContext;
 } VideoState;
 
 static void video_display(VideoState* is);
 
 /* options specified by the user */
-static const char* input_filename;
-static int default_width = 640;
-static int default_height = 480;
-static int screen_width = 0;
-static int screen_height = 0;
-static int screen_left = SDL_WINDOWPOS_CENTERED;
-static int screen_top = SDL_WINDOWPOS_CENTERED;
 static int audio_disable;
 static int video_disable;
 static int subtitle_disable;
 static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = {0};
 static int seek_by_bytes = -1;
 static float seek_interval = 10;
-static int display_disable;
 static int borderless;
 static int alwaysontop;
 static int startup_volume = 100;
@@ -392,8 +384,8 @@ static const struct TextureFormatEntry {
 
 static enum AVPixelFormat from_bitmap_format(bitmap_format_t texture_fmt) {
   uint32_t i = 0;
-  for(i = 0; i < ARRAY_SIZE(sdl_texture_format_map); i++) {
-    if(sdl_texture_format_map[i].texture_fmt == texture_fmt) {
+  for (i = 0; i < ARRAY_SIZE(sdl_texture_format_map); i++) {
+    if (sdl_texture_format_map[i].texture_fmt == texture_fmt) {
       return sdl_texture_format_map[i].format;
     }
   }
@@ -813,7 +805,6 @@ static void calculate_display_rect(SDL_Rect* rect, int scr_xleft, int scr_ytop, 
   rect->h = FFMAX((int)height, 1);
 }
 
-
 static void stream_component_close(VideoState* is, int stream_index) {
   AVFormatContext* ic = is->ic;
   AVCodecParameters* codecpar;
@@ -1094,7 +1085,7 @@ static void video_refresh(void* opaque, double* remaining_time) {
   if (!is->paused && get_master_sync_type(is) == AV_SYNC_EXTERNAL_CLOCK && is->realtime)
     check_external_clock_speed(is);
 
-  if (!display_disable && is->show_mode != SHOW_MODE_VIDEO && is->audio_st) {
+  if (is->show_mode != SHOW_MODE_VIDEO && is->audio_st) {
     time = av_gettime_relative() / 1000000.0;
     if (is->force_refresh || is->last_vis_time + rdftspeed < time) {
       video_display(is);
@@ -1179,8 +1170,7 @@ static void video_refresh(void* opaque, double* remaining_time) {
     }
   display:
     /* display picture */
-    if (!display_disable && is->force_refresh && is->show_mode == SHOW_MODE_VIDEO &&
-        is->pictq.rindex_shown)
+    if (is->force_refresh && is->show_mode == SHOW_MODE_VIDEO && is->pictq.rindex_shown)
       video_display(is);
   }
   is->force_refresh = 0;
@@ -1205,6 +1195,7 @@ static void video_refresh(void* opaque, double* remaining_time) {
         av_diff = get_master_clock(is) - get_clock(&is->vidclk);
       else if (is->audio_st)
         av_diff = get_master_clock(is) - get_clock(&is->audclk);
+ #if FFMPEG_DEBUG        
       av_log(NULL, AV_LOG_INFO,
              "%7.2f %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%" PRId64 "/%" PRId64 "   \r",
              get_master_clock(is),
@@ -1215,6 +1206,8 @@ static void video_refresh(void* opaque, double* remaining_time) {
              sqsize, is->video_st ? is->viddec.avctx->pts_correction_num_faulty_dts : 0,
              is->video_st ? is->viddec.avctx->pts_correction_num_faulty_pts : 0);
       fflush(stdout);
+#endif/*FFMPEG_DEBUG*/
+
       last_time = cur_time;
     }
   }
@@ -1390,7 +1383,6 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
 
   if (autorotate) {
     double theta = get_rotation(is->video_st);
-    is->rotation = theta;
 
     if (fabs(theta - 90) < 1.0) {
       INSERT_FILT("transpose", "clock");
@@ -2174,6 +2166,8 @@ static int read_thread(void* arg) {
   SDL_mutex* wait_mutex = SDL_CreateMutex();
   int scan_all_pmts_set = 0;
   int64_t pkt_ts;
+  const char* input_filename = is->filename;
+  AVRational sar = {0, 1};
 
   if (!wait_mutex) {
     av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
@@ -2294,7 +2288,7 @@ static int read_thread(void* arg) {
   if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
     AVStream* st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
     AVCodecParameters* codecpar = st->codecpar;
-    AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
+    sar = av_guess_sample_aspect_ratio(ic, st, NULL);
     if (codecpar->width) {
       is->frame_width = codecpar->width;
       is->frame_height = codecpar->height;
@@ -2320,6 +2314,25 @@ static int read_thread(void* arg) {
     av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n", is->filename);
     ret = -1;
     goto fail;
+  } else {
+    uint32_t w = is->frame_width;
+    uint32_t h = is->frame_height;
+    media_player_loaded_event_t event;
+    bool_t has_audio = is->audio_stream >= 0;
+    bool_t has_video = is->video_stream >= 0;
+    uint32_t duration = is->ic->duration / 1000;
+    bool_t has_subtitle = is->subtitle_stream >= 0;
+    event_t* e =
+        media_player_loaded_event_init(&event, has_audio, has_video, has_subtitle, duration, w, h);
+    int64_t display_aspect_ratio_w = 0;
+    int64_t display_aspect_ratio_h = 0;
+
+    av_reduce(&display_aspect_ratio_w, &display_aspect_ratio_h, w * (int64_t)sar.num,
+              h * (int64_t)sar.den, 1024 * 1024);
+    event.display_aspect_ratio_w = display_aspect_ratio_w;
+    event.display_aspect_ratio_h = display_aspect_ratio_h;
+
+    media_player_notify(is->player, e);
   }
 
   if (infinite_buffer < 0 && is->realtime) infinite_buffer = 1;
@@ -2328,10 +2341,12 @@ static int read_thread(void* arg) {
     if (is->abort_request) break;
     if (is->paused != is->last_paused) {
       is->last_paused = is->paused;
-      if (is->paused)
+      if (is->paused) {
         is->read_pause_return = av_read_pause(ic);
-      else
+        media_player_notify_simple(is->player, EVT_MEDIA_PLAYER_PAUSED);
+      } else {
         av_read_play(ic);
+      }
     }
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
     if (is->paused &&
@@ -2447,6 +2462,8 @@ static int read_thread(void* arg) {
     }
   }
 
+  media_player_notify_simple(is->player, EVT_MEDIA_PLAYER_DONE);
+
   ret = 0;
 fail:
   if (ic && !is->ic) avformat_close_input(&ic);
@@ -2462,9 +2479,9 @@ fail:
   return 0;
 }
 
-static VideoState* stream_open(const char* filename, AVInputFormat* iformat) {
+static VideoState* stream_open(const char* filename, media_player_t* player) {
   VideoState* is;
-
+  AVInputFormat* iformat = NULL;
   is = av_mallocz(sizeof(VideoState));
   if (!is) return NULL;
   is->filename = av_strdup(filename);
@@ -2472,7 +2489,7 @@ static VideoState* stream_open(const char* filename, AVInputFormat* iformat) {
   is->iformat = iformat;
   is->ytop = 0;
   is->xleft = 0;
-  input_filename = is->filename;
+  is->player = player;
 
   /* start video display */
   if (frame_queue_init(&is->pictq, &is->videoq, VIDEO_PICTURE_QUEUE_SIZE, 1) < 0) goto fail;
@@ -2526,13 +2543,12 @@ static int ffmpeg_init(void) {
   av_log_set_flags(AV_LOG_SKIP_REPEATED);
 
   init_opts();
-  display_disable = 0;
   av_init_packet(&flush_pkt);
   flush_pkt.data = (uint8_t*)&flush_pkt;
 
   return 0;
 }
-  
+
 static int ffmpeg_deinit(void) {
   avformat_network_deinit();
 

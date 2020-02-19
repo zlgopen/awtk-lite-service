@@ -22,6 +22,25 @@
 #include "awtk.h"
 #include "media_player/media_player_ffmpeg.h"
 
+static ret_t on_media_player_event(void* ctx, event_t* e) {
+  switch (e->type) {
+    case EVT_MEDIA_PLAYER_LOADED: {
+      media_player_loaded_event_t* evt = media_player_loaded_event_cast(e);
+      log_debug("w=%u h=%u duration=%u\n", evt->video_width, evt->video_height, evt->duration);
+      break;
+    }
+    case EVT_MEDIA_PLAYER_PAUSED: {
+      log_debug("paused\n");
+      break;
+    }
+    case EVT_MEDIA_PLAYER_DONE: {
+      log_debug("done\n");
+      break;
+    }
+  }
+  return RET_OK;
+}
+
 static ret_t on_load_click(void* ctx, event_t* e) {
   media_player_t* player = (media_player_t*)ctx;
 
@@ -73,12 +92,13 @@ static ret_t mutable_image_prepare_image(void* ctx, bitmap_t* image) {
   uint32_t width = media_player_get_video_width(player);
   uint32_t height = media_player_get_video_height(player);
 
-  log_debug("width=%u height=%u\n", width, height);
   return media_player_get_video_frame(player, image);
 }
 
 void application_init() {
   media_player_t* player = media_player_ffmpeg_create();
+
+  media_player_set_on_event(player, on_media_player_event, player);
 
   widget_t* win = window_create(NULL, 0, 0, 0, 0);
   widget_t* mutable = mutable_image_create(win, 0, 0, win->w, win->h);

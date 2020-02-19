@@ -20,6 +20,7 @@
  */
 
 #include "tkc/mem.h"
+#include "media_player/media_player_event.h"
 #include "media_player/media_player_ffmpeg.h"
 
 #include "ffmpeg_player.inc"
@@ -36,8 +37,8 @@ static ret_t media_player_ffmpeg_load(media_player_t* player, const char* url) {
     stream_close(ffmpeg->is);
   }
 
-  ffmpeg->is = stream_open(url, NULL);
-  if(ffmpeg->is != NULL) {
+  ffmpeg->is = stream_open(url, player);
+  if (ffmpeg->is != NULL) {
     ffmpeg->is->frame_width = 0;
     ffmpeg->is->frame_height = 0;
     toggle_pause(ffmpeg->is);
@@ -50,7 +51,7 @@ static ret_t media_player_ffmpeg_start(media_player_t* player) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
   return_value_if_fail(ffmpeg->is != NULL, RET_BAD_PARAMS);
 
-  if(ffmpeg->is->paused) {
+  if (ffmpeg->is->paused) {
     toggle_pause(ffmpeg->is);
   }
 
@@ -61,7 +62,7 @@ static ret_t media_player_ffmpeg_pause(media_player_t* player) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
   return_value_if_fail(ffmpeg->is != NULL, RET_BAD_PARAMS);
 
-  if(!(ffmpeg->is->paused)) {
+  if (!(ffmpeg->is->paused)) {
     toggle_pause(ffmpeg->is);
   }
 
@@ -73,7 +74,7 @@ static ret_t media_player_ffmpeg_stop(media_player_t* player) {
   return_value_if_fail(ffmpeg->is != NULL, RET_BAD_PARAMS);
 
   if (ffmpeg->is != NULL) {
-    if(!(ffmpeg->is->paused)) {
+    if (!(ffmpeg->is->paused)) {
       toggle_pause(ffmpeg->is);
     }
     stream_seek(ffmpeg->is, 0, 0, 0);
@@ -127,8 +128,8 @@ static void video_display(VideoState* is) {
 
   if (swsContext == NULL) {
     enum AVPixelFormat format = from_bitmap_format(image->format);
-    swsContext = sws_getContext(pFrame->width, pFrame->height, pFrame->format, 
-          image->w,image->h, format, 0, NULL, NULL, NULL);
+    swsContext = sws_getContext(pFrame->width, pFrame->height, pFrame->format, image->w, image->h,
+                                format, 0, NULL, NULL, NULL);
     /*TODO*/
     is->swsContext = swsContext;
   }
@@ -171,7 +172,7 @@ static ret_t media_player_ffmpeg_destroy(media_player_t* player) {
 static media_player_state_t media_player_ffmpeg_get_state(media_player_t* player) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
 
-  if(ffmpeg->is == NULL) {
+  if (ffmpeg->is == NULL) {
     return MEDIA_PLAYER_NONE;
   }
 
@@ -229,8 +230,7 @@ static const media_player_vtable_t s_media_player_ffmpeg = {
     .get_position = media_player_ffmpeg_get_position,
     .get_duration = media_player_ffmpeg_get_duration,
     .get_video_width = media_player_ffmpeg_get_video_width,
-    .get_video_height = media_player_ffmpeg_get_video_height
-};
+    .get_video_height = media_player_ffmpeg_get_video_height};
 
 media_player_t* media_player_ffmpeg_create(void) {
   media_player_ffmpeg_t* player = TKMEM_ZALLOC(media_player_ffmpeg_t);

@@ -24,6 +24,7 @@
 
 #include "tkc/event.h"
 #include "base/bitmap.h"
+#include "media_player/media_player_event.h"
 
 BEGIN_C_DECLS
 
@@ -33,22 +34,22 @@ BEGIN_C_DECLS
  * 媒体播放器的状态。
  */
 typedef enum _media_player_state_t {
-  /** 
+  /**
    * @const MEDIA_PLAYER_NONE
    * 无效状态。
-   */  
+   */
   MEDIA_PLAYER_NONE,
 
-  /** 
+  /**
    * @const MEDIA_PLAYER_PAUSED
    * 暂停状态。
-   */  
+   */
   MEDIA_PLAYER_PAUSED,
 
-  /** 
+  /**
    * @const MEDIA_PLAYER_PLAYING
    * 播放状态。
-   */  
+   */
   MEDIA_PLAYER_PLAYING
 } media_player_state_t;
 
@@ -98,6 +99,17 @@ typedef struct _media_player_vtable_t {
  */
 struct _media_player_t {
   const media_player_vtable_t* vt;
+
+  /**
+   * @property {void*} user_data
+   * @annotation ["readable"]
+   * 用户数据。
+   */
+  void* user_data;
+
+  /*private*/
+  void* on_event_ctx;
+  event_func_t on_event;
 };
 
 /**
@@ -265,6 +277,28 @@ uint32_t media_player_get_video_width(media_player_t* player);
  * @return {uint32_t} 返回时间高度(ms)。
  */
 uint32_t media_player_get_video_height(media_player_t* player);
+
+/**
+ * @method media_player_notify_simple
+ * 事件通知。
+ *
+ * @param {media_player_t*} media_player media_player对象。
+ * @param {uint32_t} event_type 事件类型。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+ret_t media_player_notify_simple(media_player_t* player, uint32_t event_type);
+
+/**
+ * @method media_player_notify
+ * 事件通知。
+ *
+ * @param {media_player_t*} media_player media_player对象。
+ * @param {event_t*} e 事件对象。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+ret_t media_player_notify(media_player_t* player, event_t* e);
 
 END_C_DECLS
 
