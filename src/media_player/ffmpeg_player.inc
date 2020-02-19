@@ -365,8 +365,6 @@ static AVPacket flush_pkt;
 
 #define FF_QUIT_EVENT (SDL_USEREVENT + 2)
 
-static SDL_Renderer* renderer;
-static SDL_RendererInfo renderer_info = {0};
 static SDL_AudioDeviceID audio_dev;
 
 static const struct TextureFormatEntry {
@@ -1324,14 +1322,6 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
   int nb_pix_fmts = 0;
   int i, j;
 
-  for (i = 0; i < renderer_info.num_texture_formats; i++) {
-    for (j = 0; j < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; j++) {
-      if (renderer_info.texture_formats[i] == sdl_texture_format_map[j].texture_fmt) {
-        pix_fmts[nb_pix_fmts++] = sdl_texture_format_map[j].format;
-        break;
-      }
-    }
-  }
   pix_fmts[nb_pix_fmts] = AV_PIX_FMT_NONE;
 
   while ((e = av_dict_get(sws_dict, "", e, AV_DICT_IGNORE_SUFFIX))) {
@@ -2477,6 +2467,7 @@ fail:
     event.user.data1 = is;
     SDL_PushEvent(&event);
   }
+  stream_close(is);
   SDL_DestroyMutex(wait_mutex);
   return 0;
 }
