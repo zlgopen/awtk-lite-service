@@ -2332,13 +2332,15 @@ static int read_thread(void* arg) {
     event.display_aspect_ratio_w = display_aspect_ratio_w;
     event.display_aspect_ratio_h = display_aspect_ratio_h;
 
-    media_player_notify(is->player, e);
+    media_player_ffmpeg_notify(is->player, e);
   }
 
   if (infinite_buffer < 0 && is->realtime) infinite_buffer = 1;
 
   for (;;) {
-    if (is->abort_request) break;
+    if (is->abort_request) {
+      break;
+    }
     if (is->paused != is->last_paused) {
       is->last_paused = is->paused;
       if (is->paused) {
@@ -2462,10 +2464,10 @@ static int read_thread(void* arg) {
     }
   }
 
-  media_player_notify_simple(is->player, EVT_MEDIA_PLAYER_DONE);
-
-  ret = 0;
 fail:
+  ret = 0;
+  media_player_ffmpeg_notify_simple(is->player, EVT_MEDIA_PLAYER_DONE);
+
   if (ic && !is->ic) avformat_close_input(&ic);
 
   if (ret != 0) {
@@ -2536,6 +2538,7 @@ static int ffmpeg_init(void) {
   }
 
   inited = TRUE;
+  autoexit = TRUE;
 
   init_dynload();
   avdevice_register_all();

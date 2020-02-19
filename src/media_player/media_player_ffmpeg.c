@@ -23,12 +23,31 @@
 #include "media_player/media_player_event.h"
 #include "media_player/media_player_ffmpeg.h"
 
+static ret_t media_player_ffmpeg_notify(media_player_t* player, event_t* e);
+static ret_t media_player_ffmpeg_notify_simple(media_player_t* player, uint32_t type);
+
 #include "ffmpeg_player.inc"
 
 typedef struct _media_player_ffmpeg_t {
   media_player_t media_player;
   VideoState* is;
 } media_player_ffmpeg_t;
+
+static ret_t media_player_ffmpeg_notify(media_player_t* player, event_t* e) {
+  media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
+
+  return media_player_notify(player, e);
+}
+
+static ret_t media_player_ffmpeg_notify_simple(media_player_t* player, uint32_t type) {
+  media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
+
+  if(type == EVT_MEDIA_PLAYER_DONE) {
+    ffmpeg->is = NULL;
+  }
+
+  return media_player_notify_simple(player, type);
+}
 
 static ret_t media_player_ffmpeg_load(media_player_t* player, const char* url) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
@@ -74,10 +93,8 @@ static ret_t media_player_ffmpeg_stop(media_player_t* player) {
   return_value_if_fail(ffmpeg->is != NULL, RET_BAD_PARAMS);
 
   if (ffmpeg->is != NULL) {
-    if (!(ffmpeg->is->paused)) {
-      toggle_pause(ffmpeg->is);
-    }
-    stream_seek(ffmpeg->is, 0, 0, 0);
+    ffmpeg->is->abort_request = 1;
+    ffmpeg->is = NULL;
   }
 
   return RET_OK;

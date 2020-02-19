@@ -108,7 +108,7 @@ typedef struct _media_player_loaded_event_t {
    * @annotation ["readable"]
    * display aspect ratio width。
    */
-  uint32_t display_aspect_ratio_h
+  uint32_t display_aspect_ratio_h;
 } media_player_loaded_event_t;
 
 /**
