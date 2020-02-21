@@ -42,7 +42,7 @@ static ret_t media_player_ffmpeg_notify(media_player_t* player, event_t* e) {
 static ret_t media_player_ffmpeg_notify_simple(media_player_t* player, uint32_t type) {
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
 
-  if(type == EVT_MEDIA_PLAYER_DONE) {
+  if (type == EVT_MEDIA_PLAYER_DONE) {
     ffmpeg->is = NULL;
   }
 
