@@ -20,9 +20,11 @@
  */
 
 #include "tkc/mem.h"
-#include "tkc/thread.h"
+#include "tkc/rect.h"
+#include "tkc/cond.h"
 #include "tkc/mutex.h"
-#include "tkc/cond_var.h"
+#include "tkc/thread.h"
+#include "tkc/platform.h"
 #include "media_player/audio_device.h"
 #include "media_player/media_player_event.h"
 #include "media_player/media_player_ffmpeg.h"
@@ -115,7 +117,7 @@ static ret_t media_player_ffmpeg_set_volume(media_player_t* player, uint32_t vol
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
   return_value_if_fail(ffmpeg->is != NULL, RET_BAD_PARAMS);
 
-  ffmpeg->is->audio_volume = av_clip(volume, 0, SDL_MIX_MAXVOLUME);
+  ffmpeg->is->audio_volume = av_clip(volume, 0, AUDIO_DEVICE_MAXVOLUME);
 
   return RET_OK;
 }
