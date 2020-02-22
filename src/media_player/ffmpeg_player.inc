@@ -198,11 +198,11 @@ typedef struct Decoder {
   AVRational start_pts_tb;
   int64_t next_pts;
   AVRational next_pts_tb;
-  SDL_Thread* decoder_tid;
+  tk_thread_t* decoder_tid;
 } Decoder;
 
 typedef struct _VideoState {
-  SDL_Thread* read_tid;
+  tk_thread_t* read_tid;
   AVInputFormat* iformat;
   int abort_request;
   int force_refresh;
@@ -757,7 +757,7 @@ static int frame_queue_nb_remaining(FrameQueue* f) {
 static void decoder_abort(Decoder* d, FrameQueue* fq) {
   packet_queue_abort(d->queue);
   frame_queue_signal(fq);
-  SDL_WaitThread(d->decoder_tid, NULL);
+  tk_thread_join(d->decoder_tid);
   d->decoder_tid = NULL;
   packet_queue_flush(d->queue);
 }
@@ -845,7 +845,7 @@ static void stream_component_close(VideoState* is, int stream_index) {
 static void stream_close(VideoState* is) {
   /* XXX: use a special url_shutdown call to abort parse cleanly */
   is->abort_request = 1;
-  SDL_WaitThread(is->read_tid, NULL);
+  tk_thread_join(is->read_tid);
 
   /* close each stream */
   if (is->audio_stream >= 0) stream_component_close(is, is->audio_stream);
@@ -1523,9 +1523,10 @@ the_end:
 
 static int decoder_start(Decoder* d, int (*fn)(void*), const char* thread_name, void* arg) {
   packet_queue_start(d->queue);
-  d->decoder_tid = SDL_CreateThread(fn, thread_name, arg);
+  d->decoder_tid = tk_thread_create((tk_thread_entry_t)fn, arg);
+  tk_thread_start(d->decoder_tid);
   if (!d->decoder_tid) {
-    av_log(NULL, AV_LOG_ERROR, "SDL_CreateThread(): %s\n", SDL_GetError());
+    av_log(NULL, AV_LOG_ERROR, "tk_thread_create(): %s\n", SDL_GetError());
     return AVERROR(ENOMEM);
   }
   return 0;
@@ -2476,9 +2477,11 @@ static VideoState* stream_open(const char* filename, media_player_t* player) {
   is->audio_volume = startup_volume;
   is->muted = 0;
   is->av_sync_type = av_sync_type;
-  is->read_tid = SDL_CreateThread(read_thread, "read_thread", is);
+  is->read_tid = tk_thread_create((tk_thread_entry_t)read_thread, is);
+  tk_thread_start(is->read_tid);
+
   if (!is->read_tid) {
-    av_log(NULL, AV_LOG_FATAL, "SDL_CreateThread(): %s\n", SDL_GetError());
+    av_log(NULL, AV_LOG_FATAL, "tk_thread_create(): %s\n", SDL_GetError());
   fail:
     stream_close(is);
     return NULL;

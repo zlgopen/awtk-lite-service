@@ -20,6 +20,9 @@
  */
 
 #include "tkc/mem.h"
+#include "tkc/thread.h"
+#include "tkc/mutex.h"
+#include "tkc/cond_var.h"
 #include "media_player/audio_device.h"
 #include "media_player/media_player_event.h"
 #include "media_player/media_player_ffmpeg.h"
