@@ -20,6 +20,7 @@
  */
 
 #include "tkc/mem.h"
+#include "media_player/audio_device.h"
 #include "media_player/media_player_event.h"
 #include "media_player/media_player_ffmpeg.h"
 
@@ -34,8 +35,6 @@ typedef struct _media_player_ffmpeg_t {
 } media_player_ffmpeg_t;
 
 static ret_t media_player_ffmpeg_notify(media_player_t* player, event_t* e) {
-  media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
-
   return media_player_notify(player, e);
 }
 
@@ -156,13 +155,13 @@ static void video_display(VideoState* is) {
     int32_t line_length = bitmap_get_line_length(image);
     int linesize[8] = {line_length, 0, 0, 0, 0, 0, 0, 0};
     uint8_t* buffers[8] = {buff, NULL, NULL};
-    sws_scale(swsContext, pFrame->data, pFrame->linesize, 0, pFrame->height, buffers, linesize);
+    sws_scale(swsContext, (const uint8_t**)pFrame->data, pFrame->linesize, 0, pFrame->height,
+              buffers, linesize);
     bitmap_unlock_buffer(image);
   }
 }
 
 static ret_t media_player_ffmpeg_get_video_frame(media_player_t* player, bitmap_t* image) {
-  VideoState* is = NULL;
   double remaining_time = REFRESH_RATE;
   media_player_ffmpeg_t* ffmpeg = (media_player_ffmpeg_t*)player;
 

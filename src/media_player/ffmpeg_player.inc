@@ -365,7 +365,7 @@ static AVPacket flush_pkt;
 
 #define FF_QUIT_EVENT (SDL_USEREVENT + 2)
 
-static SDL_AudioDeviceID audio_dev;
+static audio_device_t* audio_dev;
 
 static const struct TextureFormatEntry {
   enum AVPixelFormat format;
@@ -390,14 +390,6 @@ static enum AVPixelFormat from_bitmap_format(bitmap_format_t texture_fmt) {
 
   return AV_PIX_FMT_NONE;
 }
-
-#if CONFIG_AVFILTER
-static int opt_add_vfilter(void* optctx, const char* opt, const char* arg) {
-  GROW_ARRAY(vfilters_list, nb_vfilters);
-  vfilters_list[nb_vfilters - 1] = arg;
-  return 0;
-}
-#endif
 
 static inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
                                  enum AVSampleFormat fmt2, int64_t channel_count2) {
@@ -599,6 +591,7 @@ static int decoder_decode_frame(Decoder* d, AVFrame* frame, AVSubtitle* sub) {
               }
             }
             break;
+          default: { break; }
         }
         if (ret == AVERROR_EOF) {
           d->finished = d->pkt_serial;
@@ -761,15 +754,6 @@ static int frame_queue_nb_remaining(FrameQueue* f) {
   return f->size - f->rindex_shown;
 }
 
-/* return last shown position */
-static int64_t frame_queue_last_pos(FrameQueue* f) {
-  Frame* fp = &f->queue[f->rindex];
-  if (f->rindex_shown && fp->serial == f->pktq->serial)
-    return fp->pos;
-  else
-    return -1;
-}
-
 static void decoder_abort(Decoder* d, FrameQueue* fq) {
   packet_queue_abort(d->queue);
   frame_queue_signal(fq);
@@ -813,7 +797,7 @@ static void stream_component_close(VideoState* is, int stream_index) {
   switch (codecpar->codec_type) {
     case AVMEDIA_TYPE_AUDIO:
       decoder_abort(&is->auddec, &is->sampq);
-      SDL_CloseAudioDevice(audio_dev);
+      audio_device_destroy(audio_dev);
       decoder_destroy(&is->auddec);
       swr_free(&is->swr_ctx);
       av_freep(&is->audio_buf1);
@@ -961,8 +945,8 @@ static double get_master_clock(VideoState* is) {
 }
 
 static void check_external_clock_speed(VideoState* is) {
-  if (is->video_stream >= 0 && is->videoq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES ||
-      is->audio_stream >= 0 && is->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES) {
+  if ((is->video_stream >= 0 && (is->videoq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES)) ||
+      (is->audio_stream >= 0 && (is->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES))) {
     set_clock_speed(&is->extclk,
                     FFMAX(EXTERNAL_CLOCK_SPEED_MIN, is->extclk.speed - EXTERNAL_CLOCK_SPEED_STEP));
   } else if ((is->video_stream < 0 || is->videoq.nb_packets > EXTERNAL_CLOCK_MAX_FRAMES) &&
@@ -1009,16 +993,6 @@ static void toggle_pause(VideoState* is) {
 
 static void toggle_mute(VideoState* is) {
   is->muted = !is->muted;
-}
-
-static void update_volume(VideoState* is, int sign, double step) {
-  double volume_level = is->audio_volume
-                            ? (20 * log(is->audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10))
-                            : -1000.0;
-  int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
-  is->audio_volume =
-      av_clip(is->audio_volume == new_volume ? (is->audio_volume + sign) : new_volume, 0,
-              SDL_MIX_MAXVOLUME);
 }
 
 static void step_to_next_frame(VideoState* is) {
@@ -1320,7 +1294,6 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
   AVRational fr = av_guess_frame_rate(is->ic, is->video_st, NULL);
   AVDictionaryEntry* e = NULL;
   int nb_pix_fmts = 0;
-  int i, j;
 
   pix_fmts[nb_pix_fmts] = AV_PIX_FMT_NONE;
 
@@ -1876,8 +1849,7 @@ static void sdl_audio_callback(void* opaque, Uint8* stream, int len) {
     else {
       memset(stream, 0, len1);
       if (!is->muted && is->audio_buf)
-        SDL_MixAudioFormat(stream, (uint8_t*)is->audio_buf + is->audio_buf_index, AUDIO_S16SYS,
-                           len1, is->audio_volume);
+        audio_device_mix(audio_dev, stream, (uint8_t*)is->audio_buf + is->audio_buf_index, len1);
     }
     len -= len1;
     stream += len1;
@@ -1896,7 +1868,7 @@ static void sdl_audio_callback(void* opaque, Uint8* stream, int len) {
 
 static int audio_open(void* opaque, int64_t wanted_channel_layout, int wanted_nb_channels,
                       int wanted_sample_rate, struct AudioParams* audio_hw_params) {
-  SDL_AudioSpec wanted_spec, spec;
+  audio_spec_t wanted_spec, spec;
   const char* env;
   static const int next_nb_channels[] = {0, 0, 1, 6, 2, 6, 4, 6};
   static const int next_sample_rates[] = {0, 44100, 48000, 96000, 192000};
@@ -1921,15 +1893,12 @@ static int audio_open(void* opaque, int64_t wanted_channel_layout, int wanted_nb
   }
   while (next_sample_rate_idx && next_sample_rates[next_sample_rate_idx] >= wanted_spec.freq)
     next_sample_rate_idx--;
-  wanted_spec.format = AUDIO_S16SYS;
-  wanted_spec.silence = 0;
+  wanted_spec.format = AUDIO_FORMAT_S16SYS;
   wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE,
                               2 << av_log2(wanted_spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC));
   wanted_spec.callback = sdl_audio_callback;
-  wanted_spec.userdata = opaque;
-  while (!(audio_dev = SDL_OpenAudioDevice(
-               NULL, 0, &wanted_spec, &spec,
-               SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE))) {
+  wanted_spec.callback_ctx = opaque;
+  while (!(audio_dev = audio_device_mixer_create(NULL, &wanted_spec, &spec))) {
     av_log(NULL, AV_LOG_WARNING, "SDL_OpenAudio (%d channels, %d Hz): %s\n", wanted_spec.channels,
            wanted_spec.freq, SDL_GetError());
     wanted_spec.channels = next_nb_channels[FFMIN(7, wanted_spec.channels)];
@@ -1943,7 +1912,7 @@ static int audio_open(void* opaque, int64_t wanted_channel_layout, int wanted_nb
     }
     wanted_channel_layout = av_get_default_channel_layout(wanted_spec.channels);
   }
-  if (spec.format != AUDIO_S16SYS) {
+  if (spec.format != AUDIO_FORMAT_S16SYS) {
     av_log(NULL, AV_LOG_ERROR, "SDL advised audio format %d is not supported!\n", spec.format);
     return -1;
   }
@@ -2006,6 +1975,8 @@ static int stream_component_open(VideoState* is, int stream_index) {
     case AVMEDIA_TYPE_VIDEO:
       is->last_video_stream = stream_index;
       forced_codec_name = video_codec_name;
+      break;
+    default:
       break;
   }
   if (forced_codec_name) codec = avcodec_find_decoder_by_name(forced_codec_name);
@@ -2093,7 +2064,7 @@ static int stream_component_open(VideoState* is, int stream_index) {
         is->auddec.start_pts_tb = is->audio_st->time_base;
       }
       if ((ret = decoder_start(&is->auddec, audio_thread, "audio_decoder", is)) < 0) goto out;
-      SDL_PauseAudioDevice(audio_dev, 0);
+      audio_device_start(audio_dev);
       break;
     case AVMEDIA_TYPE_VIDEO:
       is->video_stream = stream_index;
@@ -2130,8 +2101,8 @@ static int decode_interrupt_cb(void* ctx) {
 
 static int stream_has_enough_packets(AVStream* st, int stream_id, PacketQueue* queue) {
   return stream_id < 0 || queue->abort_request || (st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
-         queue->nb_packets > MIN_FRAMES &&
-             (!queue->duration || av_q2d(st->time_base) * queue->duration > 1.0);
+         (queue->nb_packets > MIN_FRAMES &&
+          (!queue->duration || av_q2d(st->time_base) * queue->duration > 1.0));
 }
 
 static int is_realtime(AVFormatContext* s) {
@@ -2314,8 +2285,8 @@ static int read_thread(void* arg) {
     bool_t has_subtitle = is->subtitle_stream >= 0;
     event_t* e =
         media_player_loaded_event_init(&event, has_audio, has_video, has_subtitle, duration, w, h);
-    int64_t display_aspect_ratio_w = 0;
-    int64_t display_aspect_ratio_h = 0;
+    int display_aspect_ratio_w = 0;
+    int display_aspect_ratio_h = 0;
 
     av_reduce(&display_aspect_ratio_w, &display_aspect_ratio_h, w * (int64_t)sar.num,
               h * (int64_t)sar.den, 1024 * 1024);

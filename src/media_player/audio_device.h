@@ -35,10 +35,25 @@ typedef void (*audio_device_callback_t)(void* userdata, uint8_t* stream, int len
  */
 typedef enum _audio_format_t {
   /**
-   * @const AUDIO_FORMAT_DEFAULT
-   * 缺省格式。
+   * @const AUDIO_FORMAT_NONE
+   * 无效格式。
    */
-  AUDIO_FORMAT_DEFAULT = 1,
+  AUDIO_FORMAT_NONE = 0,
+  /**
+   * @const AUDIO_FORMAT_S16SYS
+   * 16位有符号采样(系统原生字节顺序)。
+   */
+  AUDIO_FORMAT_S16SYS,
+  /**
+   * @const AUDIO_FORMAT_S32SYS
+   * 32位有符号采样(系统原生字节顺序)。
+   */
+  AUDIO_FORMAT_S32SYS,
+  /**
+   * @const AUDIO_FORMAT_U16SYS
+   * 16位无符号采样(系统原生字节顺序)。
+   */
+  AUDIO_FORMAT_U16SYS
 } audio_format_t;
 
 /**
@@ -54,11 +69,11 @@ typedef struct _audio_spec_t {
   int32_t freq;
 
   /**
-   * @property {audio_format_t} format
+   * @property {uint32_t} format
    * @annotation ["readable"]
    * 音频格式。
    */
-  audio_format_t format;
+  uint32_t format;
 
   /**
    * @property {uint8_t} channels

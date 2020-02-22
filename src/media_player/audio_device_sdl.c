@@ -33,7 +33,7 @@ typedef struct _audio_device_sdl_t {
 
 static ret_t audio_device_sdl_mix(audio_device_t* device, uint8_t* dst, const uint8_t* src,
                                   uint32_t len) {
-  SDL_MixAudioFormat(dst, src, AUDIO_S16SYS, len, device->volume);
+  SDL_MixAudio(dst, src, len, device->volume);
 
   return RET_OK;
 }
@@ -89,12 +89,48 @@ static ret_t audio_device_sdl_destroy(audio_device_t* device) {
   return RET_OK;
 }
 
-static SDL_AudioSpec sdl_audio_from(const audio_spec_t* spec) {
+static uint32_t sdl_audio_format_from(uint32_t format) {
+  switch (format) {
+    case AUDIO_FORMAT_S16SYS: {
+      return AUDIO_S16SYS;
+    }
+    case AUDIO_FORMAT_S32SYS: {
+      return AUDIO_S32SYS;
+    }
+    case AUDIO_FORMAT_U16SYS: {
+      return AUDIO_U16SYS;
+    }
+    defaut : {
+      assert(!"not supported");
+      return AUDIO_S16SYS;
+    }
+  }
+}
+
+static uint32_t sdl_audio_format_to(uint32_t format) {
+  switch (format) {
+    case AUDIO_S16SYS: {
+      return AUDIO_FORMAT_S16SYS;
+    }
+    case AUDIO_S32SYS: {
+      return AUDIO_FORMAT_S32SYS;
+    }
+    case AUDIO_U16SYS: {
+      return AUDIO_FORMAT_U16SYS;
+    }
+    defaut : {
+      assert(!"not supported");
+      return AUDIO_FORMAT_S16SYS;
+    }
+  }
+}
+
+static SDL_AudioSpec sdl_audio_spec_from(const audio_spec_t* spec) {
   SDL_AudioSpec sdl_spec;
   memset(&sdl_spec, 0x00, sizeof(sdl_spec));
 
   sdl_spec.freq = spec->freq;
-  sdl_spec.format = spec->format;
+  sdl_spec.format = sdl_audio_format_from(spec->format);
   sdl_spec.channels = spec->channels;
   sdl_spec.samples = spec->samples;
   sdl_spec.size = spec->size;
@@ -104,12 +140,12 @@ static SDL_AudioSpec sdl_audio_from(const audio_spec_t* spec) {
   return sdl_spec;
 }
 
-static audio_spec_t sdl_audio_to(const SDL_AudioSpec* sdl_spec) {
+static audio_spec_t sdl_audio_spec_to(const SDL_AudioSpec* sdl_spec) {
   audio_spec_t spec;
   memset(&spec, 0x00, sizeof(spec));
 
   spec.freq = sdl_spec->freq;
-  spec.format = sdl_spec->format;
+  spec.format = sdl_audio_format_to(sdl_spec->format);
   spec.channels = sdl_spec->channels;
   spec.samples = sdl_spec->samples;
   spec.size = sdl_spec->size;
@@ -139,10 +175,10 @@ static audio_device_t* audio_device_sdl_create(const char* name, bool_t is_captu
   uint32_t flags = SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE;
   return_value_if_fail(desired != NULL && real != NULL, NULL);
 
-  sdl_desired = sdl_audio_from(desired);
+  sdl_desired = sdl_audio_spec_from(desired);
   memset(&sdl_real, 0x00, sizeof(sdl_real));
 
-  devid = SDL_OpenAudioDevice(name, TRUE, &sdl_desired, &sdl_real, flags);
+  devid = SDL_OpenAudioDevice(name, is_capture, &sdl_desired, &sdl_real, flags);
   return_value_if_fail(devid != 0, NULL);
 
   sdl = TKMEM_ZALLOC(audio_device_sdl_t);
@@ -153,7 +189,7 @@ static audio_device_t* audio_device_sdl_create(const char* name, bool_t is_captu
     device->volume = 50;
     device->vt = &s_audio_device_vtable;
     if (real != NULL) {
-      *real = sdl_audio_to(&sdl_real);
+      *real = sdl_audio_spec_to(&sdl_real);
     }
   } else {
     SDL_CloseAudioDevice(devid);
