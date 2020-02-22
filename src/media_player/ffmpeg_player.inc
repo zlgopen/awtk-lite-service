@@ -1844,7 +1844,7 @@ static void sdl_audio_callback(void* opaque, Uint8* stream, int len) {
     }
     len1 = is->audio_buf_size - is->audio_buf_index;
     if (len1 > len) len1 = len;
-    if (!is->muted && is->audio_buf && is->audio_volume == SDL_MIX_MAXVOLUME)
+    if (!is->muted && is->audio_buf && is->audio_volume == AUDIO_DEVICE_MAXVOLUME)
       memcpy(stream, (uint8_t*)is->audio_buf + is->audio_buf_index, len1);
     else {
       memset(stream, 0, len1);
@@ -2431,13 +2431,6 @@ fail:
 
   if (ic && !is->ic) avformat_close_input(&ic);
 
-  if (ret != 0) {
-    SDL_Event event;
-
-    event.type = FF_QUIT_EVENT;
-    event.user.data1 = is;
-    SDL_PushEvent(&event);
-  }
   stream_close(is);
   SDL_DestroyMutex(wait_mutex);
   return 0;
@@ -2478,7 +2471,8 @@ static VideoState* stream_open(const char* filename, media_player_t* player) {
   if (startup_volume > 100)
     av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
   startup_volume = av_clip(startup_volume, 0, 100);
-  startup_volume = av_clip(SDL_MIX_MAXVOLUME * startup_volume / 100, 0, SDL_MIX_MAXVOLUME);
+  startup_volume =
+      av_clip(AUDIO_DEVICE_MAXVOLUME * startup_volume / 100, 0, AUDIO_DEVICE_MAXVOLUME);
   is->audio_volume = startup_volume;
   is->muted = 0;
   is->av_sync_type = av_sync_type;

@@ -94,17 +94,12 @@ static uint32_t sdl_audio_format_from(uint32_t format) {
     case AUDIO_FORMAT_S16SYS: {
       return AUDIO_S16SYS;
     }
-    case AUDIO_FORMAT_S32SYS: {
-      return AUDIO_S32SYS;
-    }
-    case AUDIO_FORMAT_U16SYS: {
-      return AUDIO_U16SYS;
-    }
-    defaut : {
-      assert(!"not supported");
-      return AUDIO_S16SYS;
+    case AUDIO_FORMAT_S16MSB: {
+      return AUDIO_S16MSB;
     }
   }
+
+  return AUDIO_S16SYS;
 }
 
 static uint32_t sdl_audio_format_to(uint32_t format) {
@@ -112,17 +107,12 @@ static uint32_t sdl_audio_format_to(uint32_t format) {
     case AUDIO_S16SYS: {
       return AUDIO_FORMAT_S16SYS;
     }
-    case AUDIO_S32SYS: {
-      return AUDIO_FORMAT_S32SYS;
-    }
-    case AUDIO_U16SYS: {
-      return AUDIO_FORMAT_U16SYS;
-    }
-    defaut : {
-      assert(!"not supported");
-      return AUDIO_FORMAT_S16SYS;
+    case AUDIO_S16MSB: {
+      return AUDIO_FORMAT_S16MSB;
     }
   }
+
+  return AUDIO_FORMAT_S16SYS;
 }
 
 static SDL_AudioSpec sdl_audio_spec_from(const audio_spec_t* spec) {
