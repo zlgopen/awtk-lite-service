@@ -17,29 +17,21 @@ env.Program(os.path.join(BIN_DIR, 'demo_async'), ['demo_async.c'])
 PLAYER_CPPPATH=[]
 PLAYER_LINKFLAGS=""
 PLAYER_LIBS = ["media_player"]
-PLAYER_LIBPATH = [os.path.join(FFMPEG_ROOT, "libavdevice"),
-  os.path.join(FFMPEG_ROOT, "libavfilter"),
-  os.path.join(FFMPEG_ROOT, "libavformat"),
-  os.path.join(FFMPEG_ROOT, "libavutil"),
-  os.path.join(FFMPEG_ROOT, "libcodec"),
-  os.path.join(FFMPEG_ROOT, "libswscale"),
-  X264_ROOT
-]
 
 OS_NAME = platform.system();
 
 FFMPEG_LIBS=[
-"avfilter",
-"avformat",
-"avcodec", 
-"avformat",
-"avdevice",
-"avresample", 
-"avutil", 
-"swscale",
-"swresample",
-"postproc",
-"x264"]
+ "avformat",
+ "avcodec", 
+ "avformat",
+ "avdevice",
+ "avresample", 
+ "avfilter",
+ "avutil", 
+ "swscale",
+ "swresample",
+ "postproc",
+ "x264"]
 
 if OS_NAME == 'Darwin':
   PLAYER_LINKFLAGS=" -framework  VideoToolbox -framework CoreVideo -framework CoreMedia " 
@@ -48,16 +40,14 @@ if OS_NAME == 'Darwin':
   PLAYER_LINKFLAGS = PLAYER_LINKFLAGS + " -framework CoreFoundation"
   PLAYER_LIBS = PLAYER_LIBS + FFMPEG_LIBS + ['iconv', 'pthread', 'lzma', 'bz2', 'z']
 elif OS_NAME == 'Linux':
-  PLAYER_LIBS = PLAYER_LIBS + FFMPEG_LIBS + ["xcb","xcb-shm","xcb-shape",
-  "xcb-xfixes","asound","sndio","Xv","Xv","X11","Xext", "z"]
+  PLAYER_LIBS = PLAYER_LIBS + FFMPEG_LIBS + ["xcb","xcb-shm","xcb-shape", 
+    "xcb-xfixes", "Xv", "asound", "z"]
 elif OS_NAME == 'Windows':
   print("debugo");
 
 env['LIBS'] = PLAYER_LIBS +  env['LIBS']
-env['LIBPATH'] = PLAYER_LIBPATH +  env['LIBPATH']
 env['LINKFLAGS'] = env['LINKFLAGS'] + PLAYER_LINKFLAGS
 
-print(PLAYER_LIBPATH)
 env.Program(os.path.join(BIN_DIR, 'demo_media_player'), ['demo_media_player.c'])
 
 
